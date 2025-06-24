@@ -18,8 +18,8 @@ groups <- c("Combining_Tumor_and_FGT_Enhancement.csv",
 
 # iterate over each feature group
 for (group in groups) {
-    file_path <- here("data", "raw", group)
-    data <- read.csv(file_path)
+  file_path <- here("data", "raw", group)
+  data <- read.csv(file_path)
 
-    # perform data analysis on each feature group here
+  # perform data analysis on each feature group here
 }
