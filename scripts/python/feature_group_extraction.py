@@ -33,6 +33,13 @@ data = pd.merge(clinData,
                 on = 'Patient ID',
                 how = 'inner')
 
+# need to have R-style column names
+# where spaces and special characters are replaced with periods
+data.columns = (
+    data.columns
+        .str.replace(r"[ ()=,]", ".", regex=True)
+)
+
 # display information about the dataframes
 '''
 print(data.head())
@@ -53,9 +60,10 @@ for group in FEATURE_GROUPS:
     columns = columns_df['var'].to_list()
 
     # we also want to include Patient ID in each dataframe- can always ignore it
-    columns.append('Patient ID')
+    columns.append('Patient.ID')
     
     tmp = data.filter(columns)
 
+    # appropriately name the file and save to csv
     filename = group.replace(' ', '_') + '.csv'
     tmp.to_csv(BASE_DIR / f'data/raw/{filename}')
