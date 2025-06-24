@@ -1,5 +1,8 @@
 '''
 feature_group_extraction.py
+Based on the labeling of each variable in imFeatures_and_feature_citations.csv,
+saves the clinical and other features as a .csv file, as well as
+all of the imaging data as broken down by feature group.
 '''
 
 import pandas as pd
@@ -39,6 +42,8 @@ data.columns = (
     data.columns
         .str.replace(r"[ ()=,]", ".", regex=True)
 )
+
+data.to_csv(BASE_DIR / f'data/raw/joined_data.csv')
 
 # display information about the dataframes
 '''
