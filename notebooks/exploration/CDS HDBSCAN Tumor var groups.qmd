@@ -1,0 +1,90 @@
+---
+title: "HDBSCABN 3 var groups graph"
+format: html
+editor: visual
+---
+
+```{r}
+# PCA for the 3 data set variable groups that seem related to me: 
+
+variation <- read.csv("C:\\Users\\k8pod\\BDSICDS\\Tumor_Enhancement_Variation.csv")
+texture <- read.csv("C:\\Users\\k8pod\\BDSICDS\\Tumor_Enhancement_Texture.csv")
+size <- read.csv("C:\\Users\\k8pod\\BDSICDS\\Tumor_Size_and_Morphology.csv")
+clinData  <- read.csv("C:\\Users\\k8pod\\BDSICDS\\clinicalData_clean.csv")
+
+
+merged_data <- variation %>%
+  inner_join(texture, by = "Patient.ID") %>%
+  inner_join(size, by = "Patient.ID")
+
+patient_ids <- merged_data$Patient.ID
+
+pca_result <- prcomp(data_clean, scale. = TRUE)
+
+pca_data <- as.data.frame(pca_result$x)
+pca_data$Patient.ID <- patient_ids
+
+pca_data <- pca_data %>%
+  left_join(clinData %>% select(Patient.ID, Mol.Subtype), by = "Patient.ID")
+
+
+pca_data$MolSubtype <- factor(case_when(
+  pca_data$Mol.Subtype == 0 ~ "Luminal",
+  pca_data$Mol.Subtype == 1 ~ "ER/PR+ and HER2+",
+  pca_data$Mol.Subtype == 2 ~ "HER2",
+  pca_data$Mol.Subtype == 3 ~ "Triple Negative"))
+#levels = c("Luminal", "ER/PR+ and HER2+", "HER2+", "Triple Negative"))
+
+# Plot PCA with colors by subtype
+ggplot(pca_data, aes(x = PC1, y = PC2, col = MolSubtype)) +
+  geom_point(alpha = 0.7, size = 3) +
+  labs(
+    title = "PCA of Combined Imaging Features",
+    x = paste0("PC1 (", round(summary(pca_result)$importance[2,1] * 100, 1), "% variance)"),
+    y = paste0("PC2 (", round(summary(pca_result)$importance[2,2] * 100, 1), "% variance)"),
+    color = "Subtype"
+  ) +
+  theme_minimal()
+
+
+
+
+
+# Use the first 2 PCs as input to HDBSCAN
+clustering_input <- pca_data %>% 
+  select(starts_with("PC")) %>% 
+  select(1:2)  # you can adjust number of PCs... just did PC1 and PC2
+library(dbscan) # load to do the algorithm
+
+# Run HDBSCAN (adjust minPts to control cluster granularity)
+hdb_result <- hdbscan(clustering_input, minPts = 10) #minPts helps to determine what a "cluster" is / how many patients in each cluster 
+pca_data$HDBSCAN_Cluster <- as.factor(hdb_result$cluster)
+
+pca_data %>% 
+ggplot()+
+  aes(x = PC1, y = PC2, color = HDBSCAN_Cluster) +
+  geom_point(alpha = 0.5, size = 3) +
+  labs(title = "HDBSCAN Clusters in PCA Space",
+       x = paste0("PC1 (", round(summary(pca_result)$importance[2,1] * 100, 1), "%)"),
+       y = paste0("PC2 (", round(summary(pca_result)$importance[2,2] * 100, 1), "%)"),
+       color = "HDBSCAN Cluster") +
+  theme_minimal()
+
+
+
+# This compares the two graphs together 
+
+library(patchwork)
+
+p1 <- ggplot(pca_data, aes(x = PC1, y = PC2, color = MolSubtype)) +
+  geom_point(alpha = 0.7, size = 3) +
+  labs(title = "Colored by Molecular Subtype") +
+  theme_minimal()
+
+p2 <- ggplot(pca_data, aes(x = PC1, y = PC2, color = HDBSCAN_Cluster)) +
+  geom_point(alpha = 0.7, size = 3) +
+  labs(title = "Colored by HDBSCAN Cluster") +
+  theme_minimal()
+
+p1 + p2
+```
