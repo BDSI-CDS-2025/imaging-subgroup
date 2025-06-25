@@ -112,4 +112,4 @@ for (group in groups) {
 # write the loading factor results to a .csv file
 file_path_joined <- here("results", "reports", "top_three_loading_factors_by_sugroup.csv")
 #print(loading)
-write.csv(loading, file_path_joined)
+write.csv(loading, file_path_joined, row.names = FALSE)
