@@ -103,11 +103,11 @@ for (group in groups) {
   loading_scores <- pca$rotation[, 1]
   var_scores <- abs(loading_scores) # only care about magnitude
   var_score_ranked <- sort(var_scores, decreasing = TRUE)
-  top_3_variables <- names(var_score_ranked[1:3])
+  variable_names <- names(var_score_ranked)
 
   for (i in 1:3) {
     temp <- data.frame(group = group_name,
-                       variable = top_3_variables[i],
+                       variable = variable_names[i],
                        loading_factor = var_score_ranked[i])
     loading_top_three <- rbind(loading_top_three, temp)
   }
@@ -115,11 +115,10 @@ for (group in groups) {
   # add to data frame to explain up to 90% of the variance
   total <- 0
   i <- 1
-  print(total)
-  print(total < .9)
+
   while (total < 0.9) {
     temp <- data.frame(group = group_name,
-                       variable = var_score_ranked[i],
+                       variable = variable_names[i],
                        loading_factor = var_score_ranked[i])
     i <- i + 1
     total <- total + var_score_ranked[i]
@@ -131,9 +130,9 @@ for (group in groups) {
 # write the loading factor results to a .csv file
 file_path_joined_top_three <- here("results",
                                    "reports",
-                                   "top_three_loading_factors_by_sugroup.csv")
+                                   "top_three_loading_factors_by_subroup.csv")
 write.csv(loading_top_three, file_path_joined_top_three, row.names = FALSE)
 file_path_joined_ninety <- here("results",
                                 "reports",
-                                "ninety_percent_factors_by_sugroup.csv")
+                                "ninety_percent_factors_by_subgroup.csv")
 write.csv(loading_ninety, file_path_joined_ninety, row.names = FALSE)
