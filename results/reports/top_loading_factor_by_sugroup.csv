@@ -1,0 +1,11 @@
+"group","variable","loading_factor"
+"Combining_Tumor_and_FGT_Enhancement","F1_DT_T1NFS..T11.0.1.T12.0.5.",0.278472378557653
+"Tumor_Size_and_Morphology","Median_solidity_Tumor",0.403561036280346
+"Tumor_Enhancement_Texture","Inv_diff_moment_normalized_Tumor",0.138443218851714
+"Tumor_Enhancement_Spatial_Heterogeneity","EnhancementClusterNeighborhoodSimilarity_Tumor",0.564330198937807
+"Tumor_Enhancement_Variation","Enhancement_variance_increasing_rate_Tumor",0.354612734013125
+"Breast_and_FGT_Volume_Features","BreastVol",0.598379941715329
+"FGT_Enhancement","Ratio_Tissue_vol_enhancing_more_than_70percent_from_PostCon_to_Tissue_Vol",0.149495187569743
+"Tumor_Enhancement","PE_map_mean_tumor",0.277940574079549
+"FGT_Enhancement_Texture","PE_map_difference_entropy_tissue_PostCon",0.115198821004506
+"FGT_Enhancement_Variation","PE_map_std_dev_tissue_PostCon",0.238051199414778
