@@ -20,11 +20,19 @@ file_path_joined <- here("data", "raw", "joined_data.csv")
 joined_data <- read.csv(file_path_joined)
 joined_data <- joined_data %>% mutate(ER = as.factor(ER))
 
-# create dataframe object that will store loading information for top three
+# column names for dataframes storing information about loading factors
 loading_colnames <- c("group", "variable", "loading_factor")
-loading <- data.frame(matrix(nrow = 0, ncol = length(loading_colnames)))
-colnames(loading) = loading_colnames
-print(loading)
+
+# create dataframe object that will store loading information for top three
+loading_top_three <- data.frame(matrix(nrow = 0,
+                                       ncol = length(loading_colnames)))
+colnames(loading_top_three) <- loading_colnames
+
+# create a dataframe object that will store loading information for
+# principal components that explain 90% of variance
+loading_ninety <- data.frame(matrix(nrow = 0, 
+                                    ncol = length(loading_colnames)))
+colnames(loading_ninety) <- loading_colnames
 
 for (group in groups) {
   file_path <- here("data", "raw", group)
@@ -68,18 +76,20 @@ for (group in groups) {
 
   # PCA scatter plot
   pca_data <- data.frame(
-    Sample = rownames(data), # in case we would like to label each point with its row
-    ER = joined_data$ER, # for coloring
-    X = pca$x[, 1],
-    Y = pca$x[, 2])
+                         # in case we would like to label
+                         # each point with its row
+                         Sample = rownames(data),
+                         ER = joined_data$ER, # for coloring
+                         X = pca$x[, 1],
+                         Y = pca$x[, 2])
   scatter <- ggplot(data = pca_data,
-    aes(x = X, y = Y, label = Sample, color=ER)) + 
-    #geom_text() + # add back if you would like to label point with row
-    geom_point() +
-    xlab(paste("PC1 - ", percent[1], "%", sep = " ")) +
-    ylab(paste("PC2 - ", percent[2], "%", sep = " ")) +
-    theme_bw() + # makes the graph's background white
-    ggtitle(paste("PCA Plot - ", group_name))
+                    aes(x = X, y = Y, label = Sample, color = ER)) +
+                    #geom_text() + # add back to label
+                    geom_point() +
+                    xlab(paste("PC1 - ", percent[1], "%", sep = " ")) +
+                    ylab(paste("PC2 - ", percent[2], "%", sep = " ")) +
+                    theme_bw() + # makes the graph's background white
+                    ggtitle(paste("PCA Plot - ", group_name))
 
   ggsave(
     filename = here(
@@ -89,27 +99,41 @@ for (group in groups) {
     plot = scatter
   )
 
-  # plot the loading factors just for one component
+  # the loading factors just the first component
   loading_scores <- pca$rotation[, 1]
   var_scores <- abs(loading_scores) # only care about magnitude
   var_score_ranked <- sort(var_scores, decreasing = TRUE)
   top_3_variables <- names(var_score_ranked[1:3])
-  print(group_name)
-  print(top_3_variables)
 
-  for (i in 1:3){
+  for (i in 1:3) {
     temp <- data.frame(group = group_name,
-      variable = top_3_variables[i],
-      loading_factor = var_score_ranked[i])
-    loading <- rbind(loading, temp)
-    #loading[nrow(loading) + 1] = c(group_name, top_3_variables[i], var_score_ranked[i])
+                       variable = top_3_variables[i],
+                       loading_factor = var_score_ranked[i])
+    loading_top_three <- rbind(loading_top_three, temp)
   }
 
-  # df[nrow(df) + 1,] = c("v1","v2")
-  
+  # add to data frame to explain up to 90% of the variance
+  total <- 0
+  i <- 1
+  print(total)
+  print(total < .9)
+  while (total < 0.9) {
+    temp <- data.frame(group = group_name,
+                       variable = var_score_ranked[i],
+                       loading_factor = var_score_ranked[i])
+    i <- i + 1
+    total <- total + var_score_ranked[i]
+    loading_ninety <- rbind(loading_ninety, temp)
+  }
+
 }
 
 # write the loading factor results to a .csv file
-file_path_joined <- here("results", "reports", "top_three_loading_factors_by_sugroup.csv")
-#print(loading)
-write.csv(loading, file_path_joined, row.names = FALSE)
+file_path_joined_top_three <- here("results",
+                                   "reports",
+                                   "top_three_loading_factors_by_sugroup.csv")
+write.csv(loading_top_three, file_path_joined_top_three, row.names = FALSE)
+file_path_joined_ninety <- here("results",
+                                "reports",
+                                "ninety_percent_factors_by_sugroup.csv")
+write.csv(loading_ninety, file_path_joined_ninety, row.names = FALSE)
