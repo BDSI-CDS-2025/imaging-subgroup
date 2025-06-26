@@ -62,8 +62,8 @@ for (group in groups) {
   # histogram of explained variance percentages
   scree <- ggplot(percent_df, aes(x = PC, y = Percent)) +
     geom_col() +
-    xlab("Explained Variance (%)") +
-    ylab("Number of Principal Components") +
+    xlab("Principal Component") +
+    ylab("Explained Variance (%)") +
     ggtitle(paste("PCA Variance Histogram -", group_name))
 
   ggsave(
