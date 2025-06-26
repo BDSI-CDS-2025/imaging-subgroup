@@ -30,9 +30,14 @@ colnames(loading_top_three) <- loading_colnames
 
 # create a dataframe object that will store loading information for
 # principal components that explain 90% of variance
-loading_ninety <- data.frame(matrix(nrow = 0, 
+loading_ninety <- data.frame(matrix(nrow = 0,
                                     ncol = length(loading_colnames)))
 colnames(loading_ninety) <- loading_colnames
+
+# a dataframe that is going to be PC1 for each group
+patient_component <- data.frame(matrix(nrow = 922,
+                                       ncol = 0))
+patient_component$Patient.ID <- joined_data$Patient.ID
 
 for (group in groups) {
   file_path <- here("data", "raw", group)
@@ -125,6 +130,9 @@ for (group in groups) {
     loading_ninety <- rbind(loading_ninety, temp)
   }
 
+  # add all features to the frame
+  col_name <- paste0("PC1_", group_name)
+  patient_component[[col_name]] <- pca$x[, 1]
 }
 
 # write the loading factor results to a .csv file
@@ -136,3 +144,7 @@ file_path_joined_ninety <- here("results",
                                 "reports",
                                 "ninety_percent_factors_by_subgroup.csv")
 write.csv(loading_ninety, file_path_joined_ninety, row.names = FALSE)
+
+# write the PC data to a csv
+file_path_joined_pc <- here("data", "interim", "pc_by_feature_group_for_patients.csv")
+write.csv(patient_component, file_path_joined_pc, row.names= FALSE)
