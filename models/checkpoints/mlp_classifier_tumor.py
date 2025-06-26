@@ -60,4 +60,4 @@ mlp = MLPClassifier(solver='lbfgs',
 # fit the model and output accuracy
 mlp.fit(X_train, y_train)
 accuracy = mlp.score(X_test, y_test)
-print(f'accuracy: {accuracy}')
+print(f'Accuracy: {accuracy}')
