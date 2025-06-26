@@ -132,6 +132,7 @@ for (group in groups) {
 
   # add all features to the frame
   col_name <- paste0("PC1_", group_name)
+  # use double brackets to access the value in col_name as the column name
   patient_component[[col_name]] <- pca$x[, 1]
 }
 
@@ -146,5 +147,7 @@ file_path_joined_ninety <- here("results",
 write.csv(loading_ninety, file_path_joined_ninety, row.names = FALSE)
 
 # write the PC data to a csv
-file_path_joined_pc <- here("data", "interim", "pc_by_feature_group_for_patients.csv")
-write.csv(patient_component, file_path_joined_pc, row.names= FALSE)
+file_path_joined_pc <- here("data",
+                            "interim",
+                            "pc_by_feature_group_for_patients.csv")
+write.csv(patient_component, file_path_joined_pc, row.names = FALSE)
