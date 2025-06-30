@@ -5,11 +5,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, roc_auc_score
 
-# Load data
-clinData = pd.read_csv('data/raw/clinicalData_clean.csv')
-imFeatures = pd.read_csv('data/raw/imagingFeatures.csv')
+# Load data 
+clinData = pd.read_csv('/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/data/raw/clinicalData_clean.csv') # Adjust path as necessary
+imFeatures = pd.read_csv('/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/data/raw/imagingFeatures.csv')
 # Remove 1st row of each DataFrame (as it contains extra information)
 clinData = clinData.iloc[1:]
 imFeatures = imFeatures.iloc[1:]
@@ -38,40 +38,59 @@ if not np.issubdtype(y.dtype, np.number):
     le = LabelEncoder()
     y = le.fit_transform(y)
 
-# 5-fold cross-validated multinomial logistic regression, with 1 fold held out as test set
+# 5-fold cross-validated multinomial logistic regression
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=630)
 splits = list(skf.split(X, y))
 
-# Use the last fold as the test set, the first 4 as cross-validation
-cv_splits = splits[:4]
-test_split = splits[4]
-
 cv_accuracies = []
+cv_roc_aucs = []
 
-for fold, (train_idx, val_idx) in enumerate(cv_splits, 1):
+for fold, (train_idx, val_idx) in enumerate(splits, 1):
     X_train, X_val = X[train_idx], X[val_idx]
     y_train, y_val = y[train_idx], y[val_idx]
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_val_scaled = scaler.transform(X_val)
-    logit_model = LogisticRegression(solver='lbfgs', max_iter=1000)  # removed multi_class
+    logit_model = LogisticRegression(solver='lbfgs', max_iter=1000)
     logit_model.fit(X_train_scaled, y_train)
     y_pred = logit_model.predict(X_val_scaled)
     acc = accuracy_score(y_val, y_pred)
+    y_proba = logit_model.predict_proba(X_val_scaled)
+    roc_auc = roc_auc_score(y_val, y_proba, multi_class='ovr')
     cv_accuracies.append(acc)
-    print(f"CV Fold {fold} accuracy: {acc:.4f}")
+    cv_roc_aucs.append(roc_auc)
+    print(f"Logistic CV Fold {fold} accuracy: {acc:.4f}, ROC-AUC: {roc_auc:.4f}")
 
-print(f"Mean cross-validated accuracy (4 folds): {np.mean(cv_accuracies):.4f}")
+print(f"Mean cross-validated accuracy (5 folds): {np.mean(cv_accuracies):.4f}")
+print(f"Mean cross-validated ROC-AUC (5 folds): {np.mean(cv_roc_aucs):.4f}")
 
-# Evaluate on held-out test set
-train_idx, test_idx = test_split
-X_train, X_test = X[train_idx], X[test_idx]
-y_train, y_test = y[train_idx], y[test_idx]
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
-logit_model = LogisticRegression(solver='lbfgs', max_iter=1000)  # removed multi_class
-logit_model.fit(X_train_scaled, y_train)
-y_pred = logit_model.predict(X_test_scaled)
-test_acc = accuracy_score(y_test, y_pred)
-print(f"Held-out test set accuracy: {test_acc:.4f}")
+# 5-fold cross-validated multinomial lasso regression
+from sklearn.linear_model import LogisticRegressionCV  
+lasso_cv_accuracies = []
+lasso_cv_roc_aucs = []
+
+for fold, (train_idx, val_idx) in enumerate(splits, 1):
+    X_train, X_val = X[train_idx], X[val_idx]
+    y_train, y_val = y[train_idx], y[val_idx]
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_val_scaled = scaler.transform(X_val)
+    lasso_model = LogisticRegressionCV(
+        Cs=10,
+        cv=5,
+        penalty='l1',
+        solver='saga',
+        max_iter=4000,
+        random_state=630
+    )
+    lasso_model.fit(X_train_scaled, y_train)
+    y_val_pred = lasso_model.predict(X_val_scaled)
+    acc = accuracy_score(y_val, y_val_pred)
+    y_val_proba = lasso_model.predict_proba(X_val_scaled)
+    roc_auc = roc_auc_score(y_val, y_val_proba, multi_class='ovr')
+    lasso_cv_accuracies.append(acc)
+    lasso_cv_roc_aucs.append(roc_auc)
+    print(f"Lasso CV Fold {fold} accuracy: {acc:.4f}, ROC-AUC: {roc_auc:.4f}")
+
+print(f"Mean Lasso cross-validated accuracy (5 folds): {np.mean(lasso_cv_accuracies):.4f}")
+print(f"Mean Lasso cross-validated ROC-AUC (5 folds): {np.mean(lasso_cv_roc_aucs):.4f}")
