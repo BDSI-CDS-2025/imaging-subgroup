@@ -8,8 +8,8 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score
 
 # Load data
-clinData = pd.read_csv('/Users/albertkang/Documents/BDSI_2025/data/clinicalData_clean.csv')
-imFeatures = pd.read_csv('/Users/albertkang/Documents/BDSI_2025/data/imagingFeatures.csv')
+clinData = pd.read_csv('data/raw/clinicalData_clean.csv')
+imFeatures = pd.read_csv('data/raw/imagingFeatures.csv')
 # Remove 1st row of each DataFrame (as it contains extra information)
 clinData = clinData.iloc[1:]
 imFeatures = imFeatures.iloc[1:]
