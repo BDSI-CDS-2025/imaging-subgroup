@@ -80,7 +80,7 @@ for fold, (train_idx, val_idx) in enumerate(splits, 1):
         cv=5,
         penalty='l1',
         solver='saga',
-        max_iter=4000,
+        max_iter=5000,
         random_state=630
     )
     lasso_model.fit(X_train_scaled, y_train)
