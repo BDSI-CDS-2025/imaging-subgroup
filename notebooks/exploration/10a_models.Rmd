@@ -1,0 +1,47 @@
+---
+title: Model Selection and Evaluation
+author: Albert Kang
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+#| label: load-packages
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(caret)
+```
+
+```{r}
+#| label: load-data
+#| message: false
+
+# Load training data
+train_data <- read_csv("imaging-subgroup/data/processed/trainData.csv")
+# Load variable selection data
+var_data <- read_csv("imaging-subgroup/results/reports/top_loading_factor_by_subgroup.csv")
+```
+
+
+```{r}
+#| label: data-prep
+
+# Extract variable names from the factor loadings
+variable_list <- as.character(var_data$variable)
+
+# Filter the training data to include only the selected variables
+model_data <- train_data %>%
+  select(all_of(variable_list), `Mol Subtype`) %>%
+  mutate(`Mol Subtype` = as.factor(`Mol Subtype`))
+
+view(model_data)
+```
+
+```{r}
+#| label: models
+
+
+```
+

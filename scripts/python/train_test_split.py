@@ -1,8 +1,8 @@
 import pandas as pd
 
 # Load data (adjust paths as necessary)
-clinData = pd.read_csv('/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/data/raw/clinicalData_clean.csv') 
-imFeatures = pd.read_csv('/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/data/raw/imagingFeatures.csv')
+clinData = pd.read_csv('imaging-subgroup/data/raw/clinicalData_clean.csv') 
+imFeatures = pd.read_csv('imaging-subgroup/data/raw/imagingFeatures.csv')
 # Remove 1st row of each DataFrame (as it contains extra information)
 clinData = clinData.iloc[1:]
 imFeatures = imFeatures.iloc[1:]
@@ -27,6 +27,7 @@ trainData, testData = train_test_split(fullData, test_size=0.2, random_state=71)
 # Check dimensions of training and testing sets
 print("Training Data dimensions:", trainData.shape)
 print("Testing Data dimensions:", testData.shape)
+print(trainData.columns)
 
 # Check for any overlap in Patient IDs between training and testing sets
 train_patient_ids = trainData['Patient ID'].unique()
@@ -46,6 +47,17 @@ if 'Unnamed: 0_x' in testData.columns:
 # Check dimensions of training and testing sets after dropping the column
 print("Training Data dimensions after dropping 'Unnamed: 0_x':", trainData.shape)
 print("Testing Data dimensions after dropping 'Unnamed: 0_x':", testData.shape)
+
+
+# where spaces and special characters are replaced with periods
+trainData.columns = (
+    trainData.columns
+        .str.replace(r"[ ()=,]", ".", regex=True)
+)
+testData.columns = (
+    testData.columns
+        .str.replace(r"[ ()=,]", ".", regex=True)
+)
 
 # Save the training and testing sets to CSV files
 trainData.to_csv('/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/data/processed/trainData.csv', index=False)
