@@ -39,6 +39,9 @@ patient_component <- data.frame(matrix(nrow = 922,
                                        ncol = 0))
 patient_component$Patient.ID <- joined_data$Patient.ID
 
+# the number of principal component coordinates to output
+N = 3
+
 for (group in groups) {
   file_path <- here("data", "raw", group)
   data <- read.csv(file_path)
@@ -131,9 +134,13 @@ for (group in groups) {
   }
 
   # add all features to the frame
-  col_name <- paste0("PC1_", group_name)
-  # use double brackets to access the value in col_name as the column name
-  patient_component[[col_name]] <- pca$x[, 1]
+  for (i in 1:N) {
+    col_name <- paste0("PC", i, "_", group_name)
+    # use double brackets to access the value in col_name as the column name
+    patient_component[[col_name]] <- pca$x[, i]
+  }
+
+  
 }
 
 # write the loading factor results to a .csv file
@@ -149,5 +156,5 @@ write.csv(loading_ninety, file_path_joined_ninety, row.names = FALSE)
 # write the PC data to a csv
 file_path_joined_pc <- here("data",
                             "interim",
-                            "pc_by_feature_group_for_patients.csv")
+                            "pc1_to_3_by_feature_group_for_patients.csv")
 write.csv(patient_component, file_path_joined_pc, row.names = FALSE)
