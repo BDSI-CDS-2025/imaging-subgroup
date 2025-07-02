@@ -1,8 +1,8 @@
 import pandas as pd
 
 # Load data (adjust paths as necessary)
-clinData = pd.read_csv('imaging-subgroup/data/raw/clinicalData_clean.csv') 
-imFeatures = pd.read_csv('imaging-subgroup/data/raw/imagingFeatures.csv')
+clinData = pd.read_csv('/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/data/raw/clinicalData_clean.csv') 
+imFeatures = pd.read_csv('/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/data/raw/imagingFeatures.csv')
 # Remove 1st row of each DataFrame (as it contains extra information)
 clinData = clinData.iloc[1:]
 imFeatures = imFeatures.iloc[1:]
@@ -43,6 +43,10 @@ if 'Unnamed: 0_x' in trainData.columns:
     trainData = trainData.drop(columns=['Unnamed: 0_x'])
 if 'Unnamed: 0_x' in testData.columns:
     testData = testData.drop(columns=['Unnamed: 0_x'])
+if 'Unnamed: 0_y' in trainData.columns:
+    trainData = trainData.drop(columns=['Unnamed: 0_y'])
+if 'Unnamed: 0_y' in testData.columns:
+    testData = testData.drop(columns=['Unnamed: 0_y'])
 
 # Check dimensions of training and testing sets after dropping the column
 print("Training Data dimensions after dropping 'Unnamed: 0_x':", trainData.shape)
