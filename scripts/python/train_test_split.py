@@ -38,19 +38,6 @@ if overlap:
 else:
     print("No overlap in Patient IDs between training and testing sets.")
 
-# Remove the column 'Unnamed: 0_x' if it exists in both DataFrames
-if 'Unnamed: 0_x' in trainData.columns:
-    trainData = trainData.drop(columns=['Unnamed: 0_x'])
-if 'Unnamed: 0_x' in testData.columns:
-    testData = testData.drop(columns=['Unnamed: 0_x'])
-if 'Unnamed: 0_y' in trainData.columns:
-    trainData = trainData.drop(columns=['Unnamed: 0_y'])
-if 'Unnamed: 0_y' in testData.columns:
-    testData = testData.drop(columns=['Unnamed: 0_y'])
-
-# Check dimensions of training and testing sets after dropping the column
-print("Training Data dimensions after dropping 'Unnamed: 0_x':", trainData.shape)
-print("Testing Data dimensions after dropping 'Unnamed: 0_x':", testData.shape)
 
 
 # where spaces and special characters are replaced with periods
@@ -62,6 +49,24 @@ testData.columns = (
     testData.columns
         .str.replace(r"[ ()=,]", ".", regex=True)
 )
+
+# Check dimensions of training and testing sets after renaming columns
+print("Training Data dimensions after renaming columns:", trainData.shape)
+print("Testing Data dimensions after renaming columns:", testData.shape)
+
+# Remove the column 'Unnamed: 0_x' if it exists in both DataFrames
+if 'Unnamed: 0_x' in trainData.columns:
+    trainData = trainData.drop(columns=['Unnamed: 0_x'])
+if 'Unnamed: 0_x' in testData.columns:
+    testData = testData.drop(columns=['Unnamed: 0_x'])
+if 'Unnamed:.0_y' in trainData.columns:
+    trainData = trainData.drop(columns=['Unnamed:.0_y'])
+if 'Unnamed:.0_y' in testData.columns:
+    testData = testData.drop(columns=['Unnamed:.0_y'])
+
+# Check dimensions of training and testing sets after dropping the column
+print("Training Data dimensions after dropping 'Unnamed: 0_x':", trainData.shape)
+print("Testing Data dimensions after dropping 'Unnamed: 0_x':", testData.shape)
 
 # Save the training and testing sets to CSV files
 trainData.to_csv('/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/data/processed/trainData.csv', index=False)
