@@ -5,18 +5,14 @@ date: "`r Sys.Date()`"
 format: html
 ---
 
-```{r}
-#| label: load-packages
-#| warning: false
-#| message: false
+```{r load-packages, warning=FALSE, message=FALSE}
 
 library(tidyverse)
 library(caret)
+library(pROC) # ROC
 ```
 
-```{r}
-#| label: load-data
-#| message: false
+```{r load-data, warning=FALSE, message=FALSE}
 
 # Load training data
 train_data <- read_csv(
@@ -24,13 +20,12 @@ train_data <- read_csv(
 )
 # Load variable selection data
 var_data <- read_csv(
-  "/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/results/reports/top_loading_factor_by_subgroup.csv"
+  "/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/results/reports/ninety_percent_factors_by_subgroup.csv"
 )
 ```
 
 
-```{r}
-#| label: data-prep
+```{r data-prep}
 
 # Extract variable names from variable selection data
 variable_list <- as.character(var_data$variable)
@@ -43,8 +38,7 @@ model_data <- train_data %>%
 str(model_data)
 ```
 
-```{r}
-#| label: train-control
+```{r train-control}
 
 # Define the control method for training
 control <- trainControl(
@@ -55,8 +49,7 @@ control <- trainControl(
 )
 ```
 
-```{r}
-#| label: train-models
+```{r train-models}
 
 set.seed(913) # For reproducibility
 
@@ -81,11 +74,16 @@ model_rf <- train(
 )
 ```
 
-```{r}
-#| label: model-selection
+```{r model-selection}
 
 # Compare models
 results <- resamples(list(GLM = model_glm, RF = model_rf))
 summary(results)
 bwplot(results)
+
+# Get multinomial coefficients
+coef(model_glm$finalModel)
+
+# Variable importance
+varImp(model_rf)
 ```

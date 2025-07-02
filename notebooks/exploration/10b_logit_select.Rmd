@@ -1,0 +1,114 @@
+---
+title: Logistic Regression Model Selection (ER, PR, HER2)
+author: Albert Kang
+date: "`r Sys.Date()`"
+format: html
+---
+
+```{r load-packages, warning=FALSE, message=FALSE}
+
+library(tidyverse)
+library(caret)
+library(MASS) # Stepwise regression
+library(glmnet) # Regularization models
+```
+
+```{r load-data, warning=FALSE}
+
+# Load training data
+train_data <- read_csv(
+    "/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/data/processed/trainData.csv"
+)
+# Load variable selection data (from PCA)
+var_data <- read_csv(
+    "/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/results/reports/top_loading_factor_by_subgroup.csv"
+)
+```
+
+```{r data-prep}
+
+# Extract variable names from variable selection data
+variable_list <- as.character(var_data$variable)
+
+# Select relevant variables
+model_data <- train_data %>%
+  dplyr::select(all_of(variable_list), ER) %>%
+  mutate(ER = as.factor(make.names(ER)))
+
+str(model_data)
+```
+
+```{r train-control}
+
+# Define the control method for training
+control <- trainControl(
+    method = "cv",       # cross-validation
+    number = 5,          # 5-fold CV
+    classProbs = TRUE,   # needed for ROC
+    summaryFunction = twoClassSummary # for binary classification
+)
+```
+
+```{r train-models}
+
+set.seed(913) # For reproducibility
+
+# Forward selection 
+forward_model <- MASS::stepAIC(
+    glm(ER ~ 1, data = model_data, family = "binomial"),
+    scope = list(lower = ~1, upper = as.formula(paste("ER ~", paste(variable_list, collapse = "+")))),
+    direction = "forward",
+    trace = FALSE
+)
+
+# Backward selection
+backward_model <- MASS::stepAIC(
+    glm(ER ~ ., data = model_data, family = "binomial"),
+    direction = "backward",
+    trace = FALSE
+)
+
+# Ridge (alpha = 0)
+    ridge_model <- caret::train(
+        ER ~ .,
+        data = model_data,
+        method = "glmnet",
+        trControl = control,
+        tuneGrid = expand.grid(alpha = 0, lambda = seq(0.0001, 1, length = 10)),
+        preProcess = c("center", "scale")
+    )
+
+# Lasso (alpha = 1)
+lasso_model <- caret::train(
+    ER ~ .,
+    data = model_data,
+    method = "glmnet",
+    trControl = control,
+    tuneGrid = expand.grid(alpha = 1, lambda = seq(0.0001, 1, length = 10)),
+    preProcess = c("center", "scale")
+)
+
+# Elastic Net (alpha between 0 and 1)
+elastic_net_model <- caret::train(
+    ER ~ .,
+    data = model_data,
+    method = "glmnet",
+    trControl = control,
+    tuneGrid = expand.grid(alpha = 0.5, lambda = seq(0.0001, 1, length = 10)),
+    preProcess = c("center", "scale")
+)
+```
+
+```{r model-summaries}
+
+# Compare models
+results <- resamples(list(
+    Forward = forward_model,
+    Backward = backward_model,
+    Ridge = ridge_model,
+    Lasso = lasso_model,
+    ElasticNet = elastic_net_model
+))
+summary(results)
+bwplot(results)
+```
