@@ -2,7 +2,7 @@
 title: Model Selection and Evaluation
 author: Albert Kang
 date: "`r Sys.Date()`"
-output: html_document
+format: html
 ---
 
 ```{r}
@@ -19,29 +19,73 @@ library(caret)
 #| message: false
 
 # Load training data
-train_data <- read_csv("imaging-subgroup/data/processed/trainData.csv")
+train_data <- read_csv(
+  "/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/data/processed/trainData.csv"
+)
 # Load variable selection data
-var_data <- read_csv("imaging-subgroup/results/reports/top_loading_factor_by_subgroup.csv")
+var_data <- read_csv(
+  "/Users/albertkang/Documents/BDSI_2025/imaging-subgroup/results/reports/top_loading_factor_by_subgroup.csv"
+)
 ```
 
 
 ```{r}
 #| label: data-prep
 
-# Extract variable names from the factor loadings
+# Extract variable names from variable selection data
 variable_list <- as.character(var_data$variable)
 
-# Filter the training data to include only the selected variables
+# Select relevant variables
 model_data <- train_data %>%
-  select(all_of(variable_list), `Mol Subtype`) %>%
-  mutate(`Mol Subtype` = as.factor(`Mol Subtype`))
+  select(all_of(variable_list), Mol.Subtype) %>%
+  mutate(Mol.Subtype = as.factor(make.names(Mol.Subtype)))
 
-view(model_data)
+str(model_data)
 ```
 
 ```{r}
-#| label: models
+#| label: train-control
 
-
+# Define the control method for training
+control <- trainControl(
+  method = "cv",       # cross-validation
+  number = 5,          # 5-fold CV
+  classProbs = TRUE,   # needed for ROC
+  summaryFunction = multiClassSummary # for categorical classification
+)
 ```
 
+```{r}
+#| label: train-models
+
+set.seed(913) # For reproducibility
+
+# Multinomial Logistic Regression
+model_glm <- train(
+  Mol.Subtype ~ .,
+  data = model_data,
+  method = "multinom",
+  trControl = control,
+  preProcess = c("center", "scale"),
+  tuneLength = 10
+)
+
+# Random Forest
+model_rf <- train(
+  Mol.Subtype ~ .,
+  data = model_data,
+  method = "rf",
+  trControl = control,
+  preProcess = c("center", "scale"),
+  tuneLength = 10
+)
+```
+
+```{r}
+#| label: model-selection
+
+# Compare models
+results <- resamples(list(GLM = model_glm, RF = model_rf))
+summary(results)
+bwplot(results)
+```
