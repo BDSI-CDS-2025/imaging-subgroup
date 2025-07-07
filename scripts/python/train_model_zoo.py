@@ -2,9 +2,11 @@
 train_model_zoo.py
 For all three of the models (MLP, XGBoost, RF), trains the models
 on each of the datasets specified in SETUP.
+To run: python3 scripts/python/train_model_zoo.py 
 '''
 
 import pandas as pd
+import numpy as np
 import json
 from pathlib import Path
 from sklearn.preprocessing import LabelEncoder
@@ -13,25 +15,14 @@ from skopt.space import Categorical, Real, Integer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
 from xgboost import XGBClassifier
+from sklearn.utils.class_weight import compute_class_weight, compute_sample_weight
 
-# Define your SETUP dictionary
+from config import SETUP # contains information on where to read/store information
+
 path = Path.cwd()
-SETUP = {
-    'PC1': {
-        'X': path / "data" / "interim" / "pc_by_feature_group_for_patients.csv",
-        'hyperparameters_file': path / "notebooks" / "modeling" / "optimal_params_pc1.json"
-    },
-    'PC1_3': {
-        'X': path / "data" / "interim" / "pc1_to_3_by_feature_group_for_patients.csv",
-        'hyperparameters_file': path / "notebooks" / "modeling" / "optimal_params_pc1_to_3.json"
-    },
-    'ALL_IMG': {
-        'X': path / "data" / "raw" / "imagingFeatures.csv",
-        'hyperparameters_file': path / "notebooks" / "modeling" / "optimal_params_all_image_features.json"
-    }
-}
 
 TARGET = 'Mol Subtype'
+RESULTS_DEST = path / "scripts" / "python" / "all_model_results"
 train_patient_id_path = path / "data" / "processed" / "trainDataPatientID.csv"
 clinical_data_path = path / "data" / "raw" / "clinicalData_clean.csv"
 
@@ -49,7 +40,8 @@ xgb_grid = {
     'max_depth': [3, 5, 10],
     'learning_rate': [0.01, 0.1, 0.2],
     'subsample': [0.7, 0.8, 1.0],
-    'colsample_bytree': [0.7, 0.8, 1.0]
+    'colsample_bytree': [0.7, 0.8, 1.0],
+    'scale_pos_weight': [1, 5, 10] # tweak around the inverse-imbalance ratio
 }
 mlp_grid = {
     'hidden_layer_sizes': Integer(50, 100),
@@ -71,9 +63,11 @@ def load_data(X_path):
     data = features.merge(clin[['Patient ID', TARGET]], on='Patient ID', how='inner')
     data = data.drop('Unnamed: 0', axis=1, errors='ignore')
     y = data[TARGET]
-    if y.dtype == 'object' or y.dtype.name == 'category':
-        le = LabelEncoder()
-        y = le.fit_transform(y)
+
+    # Always treat as categorical, even if numeric
+    le = LabelEncoder()
+    y = le.fit_transform(y.astype(str))  # Cast to str to ensure categorical treatment
+
     X = data.drop([TARGET, 'Patient ID'], axis=1, errors='ignore')
     return X, y
 
@@ -90,10 +84,16 @@ def log_search_results(search, model_name, all_results):
     })
 
 def run_all():
+
+    # Track information as training occurs
+
+    summary_rows = []
     for key, setup in SETUP.items():
         print(f"\nProcessing dataset: {key}")
         X, y = load_data(setup['X'])
         all_results = []
+
+        sample_w = compute_sample_weight(class_weight='balanced', y=y)
 
         # RandomForest
         rf_bayes = BayesSearchCV(
@@ -105,8 +105,27 @@ def run_all():
             random_state=42,
             verbose=0
         )
-        rf_bayes.fit(X, y)
+        rf_bayes.fit(X, y, sample_weight=sample_w)
+        log_search_results(rf_bayes, "RandomForest", all_results) # switch to rf_bayes if no override
+        summary_rows.append({
+            "dataset": key,
+            "model": "RandomForest",
+            "cv_accuracy": rf_bayes.best_score_
+        })
+
+        # Hard-code that we want the tree to be balanced
+        rf_best_params = rf_bayes.best_params_.copy()
+        rf_best_params['class_weight'] = 'balanced'
+
+        # Fit the final model with the overridden parameters
+        rf_final = RandomForestClassifier(**rf_best_params)
+        rf_final.fit(X, y, sample_weight=sample_w) # switch to rf_bayes if no override
         log_search_results(rf_bayes, "RandomForest", all_results)
+        summary_rows.append({
+            "dataset": key,
+            "model": "RandomForest- Forced Weighted",
+            "cv_accuracy": rf_bayes.best_score_
+        })
         print("\✅RF fit")
 
         # XGBoost
@@ -119,8 +138,13 @@ def run_all():
             random_state=42,
             verbose=0
         )
-        xgb_bayes.fit(X, y)
+        xgb_bayes.fit(X, y, sample_weight=sample_w)
         log_search_results(xgb_bayes, "XGBoost", all_results)
+        summary_rows.append({
+            "dataset": key,
+            "model": "XGBoost",
+            "cv_accuracy": xgb_bayes.best_score_
+        })
         print("\t✅XGBoost fit")
 
         # MLP
@@ -133,14 +157,24 @@ def run_all():
             random_state=42,
             verbose=0
         )
-        mlp_bayes.fit(X, y)
+        mlp_bayes.fit(X, y, sample_weight=sample_w)
         log_search_results(mlp_bayes, "MLP", all_results)
+        summary_rows.append({
+            "dataset": key,
+            "model": "MLP",
+            "cv_accuracy": mlp_bayes.best_score_
+        })
         print("\t✅MLP fit")
 
         # Save results
         with open(setup['hyperparameters_file'], "w") as f:
             json.dump(all_results, f, indent=2)
         print(f"Saved results to {setup['hyperparameters_file']}")
+    
+    summary_df = pd.DataFrame(summary_rows)
+    SUMMARY_DEST = RESULTS_DEST / "train_cv_accuracy_summary.csv"
+    summary_df.to_csv(SUMMARY_DEST, index = False)
+    print(f'Saved cross-validated accuracy summary to {SUMMARY_DEST}')
 
 if __name__ == "__main__":
     run_all()
