@@ -39,6 +39,12 @@ patient_component <- data.frame(matrix(nrow = 922,
                                        ncol = 0))
 patient_component$Patient.ID <- joined_data$Patient.ID
 
+# a dataframe that is going to contain the coordinates
+# for the PCs that explain 90% of the variance
+top_ninety_coordinates <- data.frame(matrix(nrow = 922,
+                                            ncol = 0))
+top_ninety_coordinates$Patient.ID <- joined_data$Patient.ID
+
 # the number of principal component coordinates to output
 N = 3
 
@@ -128,6 +134,9 @@ for (group in groups) {
     temp <- data.frame(group = group_name,
                        variable = variable_names[i],
                        loading_factor = var_score_ranked[i])
+    col_name <- paste0("PC", i, "_", group_name)
+    top_ninety_coordinates[[col_name]] <- pca$x[, i]
+
     i <- i + 1
     total <- total + var_score_ranked[i]
     loading_ninety <- rbind(loading_ninety, temp)
@@ -146,7 +155,7 @@ for (group in groups) {
 # write the loading factor results to a .csv file
 file_path_joined_top_three <- here("results",
                                    "reports",
-                                   "top_three_loading_factors_by_subroup.csv")
+                                   "top_three_loading_factors_by_subgroup.csv")
 write.csv(loading_top_three, file_path_joined_top_three, row.names = FALSE)
 file_path_joined_ninety <- here("results",
                                 "reports",
@@ -158,3 +167,8 @@ file_path_joined_pc <- here("data",
                             "interim",
                             "pc1_to_3_by_feature_group_for_patients.csv")
 write.csv(patient_component, file_path_joined_pc, row.names = FALSE)
+
+file_path_joined_ninety <- here("data",
+                                "interim",
+                                "pc_90percent.csv")
+write.csv(top_ninety_coordinates, file_path_joined_ninety, row.names = FALSE)
