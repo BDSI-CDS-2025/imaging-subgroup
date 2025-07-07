@@ -16,8 +16,11 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
 from xgboost import XGBClassifier
 from sklearn.utils.class_weight import compute_class_weight, compute_sample_weight
+import warnings
 
 from config import SETUP # contains information on where to read/store information
+
+warnings.filterwarnings("ignore") # don't show any warnings
 
 path = Path.cwd()
 
@@ -120,13 +123,13 @@ def run_all():
         # Fit the final model with the overridden parameters
         rf_final = RandomForestClassifier(**rf_best_params)
         rf_final.fit(X, y, sample_weight=sample_w) # switch to rf_bayes if no override
-        log_search_results(rf_bayes, "RandomForest", all_results)
+        log_search_results(rf_final, "RandomForest-Weighted", all_results)
         summary_rows.append({
             "dataset": key,
-            "model": "RandomForest- Forced Weighted",
-            "cv_accuracy": rf_bayes.best_score_
+            "model": "RandomForest-Weighted",
+            "cv_accuracy": rf_final.best_score_
         })
-        print("\✅RF fit")
+        print("\t✅RF fit")
 
         # XGBoost
         xgb_bayes = BayesSearchCV(

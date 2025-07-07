@@ -4,6 +4,7 @@ For each of the hyperparameter configurations as described in
 /notebooks/exploration/modeling, reports the test data.
 
 To run:
+python3 scripts/python/test_model_zoo.py
 '''
 
 import pandas as pd
@@ -19,12 +20,22 @@ from sklearn.neural_network import MLPClassifier
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix, roc_curve
 import matplotlib.pyplot as plt
+import warnings
 
 from config import SETUP
+
+warnings.filterwarnings("ignore") # don't show any warnings
 
 TARGET = 'Mol Subtype'
 path = Path.cwd()
 RESULT_DIR = path / "scripts" / "python" / "all_model_results"
+
+LABEL_TO_SUBTYPE = {
+    '0': 'luminal-like',
+    '1': 'ER/PR pos, HER2 pos',
+    '2': 'HER2 pos',
+    '3': 'trip neg'
+}
 
 def load_data(X_path, train_ids_path, test_ids_path, clin_path):
     trainPatientID = pd.read_csv(train_ids_path).rename(columns={'Patient.ID': 'Patient ID'}, errors='ignore')
@@ -53,7 +64,7 @@ def plot_and_save_roc(y_true, y_score, n_classes, le, model_name, dataset_name, 
         fpr[i], tpr[i], _ = roc_curve(y_true == i, y_score[:, i])
         roc_auc[i] = roc_auc_score(y_true == i, y_score[:, i])
         class_label = le.inverse_transform([i])[0]
-        plt.plot(fpr[i], tpr[i], label=f'Class {class_label} (AUC = {roc_auc[i]:.2f})')
+        plt.plot(fpr[i], tpr[i], label=f'Class {LABEL_TO_SUBTYPE[class_label]} (AUC = {roc_auc[i]:.2f})')
     plt.plot([0, 1], [0, 1], 'k--')
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
@@ -128,7 +139,7 @@ def test_all():
             plot_and_save_roc(yTest, y_proba, len(le.classes_), le, model_name, dataset_name, dataset_dir)
             # Save confusion matrix heatmap
             plot_and_save_confusion_matrix(cm, le, model_name, dataset_name, dataset_dir)
-            
+
             dataset_results[model_name] = {
                 'accuracy': acc,
                 'auc': auc,
