@@ -16,6 +16,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
 from xgboost import XGBClassifier
 from sklearn.utils.class_weight import compute_class_weight, compute_sample_weight
+from sklearn.model_selection import cross_val_score
 import warnings
 
 from config import SETUP # contains information on where to read/store information
@@ -123,11 +124,18 @@ def run_all():
         # Fit the final model with the overridden parameters
         rf_final = RandomForestClassifier(**rf_best_params)
         rf_final.fit(X, y, sample_weight=sample_w) # switch to rf_bayes if no override
-        log_search_results(rf_final, "RandomForest-Weighted", all_results)
+        # Note that here we are not logging search results because
+        # the optimal hyperparameters have already been found- here
+        # we are just also forcing the tree to be weighted
+
+        # have to manually compute cross-validated score because already did the search
+        cv_scores = cross_val_score(
+            rf_final, X, y, cv=3, scoring='accuracy', params={'sample_weight': sample_w}
+        )
         summary_rows.append({
             "dataset": key,
             "model": "RandomForest-Weighted",
-            "cv_accuracy": rf_final.best_score_
+            "cv_accuracy": np.mean(cv_scores)
         })
         print("\t✅RF fit")
 
