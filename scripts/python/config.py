@@ -9,15 +9,15 @@ from pathlib import Path
 path = Path.cwd()
 
 # Temporary with only one dataset for debugging.
-SETUP2 = {
-    'PC1': {
-        'X': path / "data" / "interim" / "pc_by_feature_group_for_patients.csv",
-        'hyperparameters_file': path / "notebooks" / "modeling" / "optimal_params_pc1.json"
+SETUP = {
+    'CL_UNCORR': {
+        'X': path / "data" / "interim" / "imagingFeatures_uncorrelated_clustering.csv",
+        'hyperparameters_file': path / "notebooks" / "modeling" / "optimal_params_cl_uncorr.json"
     }
 }
 
 # Delete SETUP and change name when ready finally.
-SETUP = {
+SETUP2 = {
     'PC1': {
         'X': path / "data" / "interim" / "pc_by_feature_group_for_patients.csv",
         'hyperparameters_file': path / "notebooks" / "modeling" / "optimal_params_pc1.json"
@@ -33,6 +33,10 @@ SETUP = {
     'ALL_IMG': {
         'X': path / "data" / "raw" / "imagingFeatures.csv",
         'hyperparameters_file': path / "notebooks" / "modeling" / "optimal_params_all_image_features.json"
+    },
+    'CL_UNCORR': {
+        'X': path / "data" / "interim" / "imagingFeatures_uncorrelated_clustering.csv",
+        'hyperparameters_file': path / "notebooks" / "modeling" / "optimal_params_cl_uncorr.json"
     },
     'VARS_IN_PC1' : {
         'X': path / "data" / "interim" / "patient_top_loading_factor_by_subgroup.csv",
