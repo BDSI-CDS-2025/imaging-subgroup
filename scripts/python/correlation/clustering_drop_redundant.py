@@ -35,6 +35,8 @@ np.fill_diagonal(distance_matrix.values, 0)
 condensed_dist = squareform(distance_matrix.values, checks=False)
 
 # Hierarchical clustering
+# linkage matrix has four columns per merge:
+# [idx1, idx2, distance, new_cluster_size]
 Z = linkage(condensed_dist, method='average')
 
 # Choose a threshold for cluster formation (e.g., 0.1 = features with corr > 0.9 are grouped)

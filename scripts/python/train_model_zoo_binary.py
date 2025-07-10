@@ -22,6 +22,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
 from sklearn.model_selection import cross_val_predict
+from sklearn.svm import SVC
+from sklearn.model_selection import StratifiedKFold
 
 from config import SETUP
 
@@ -57,6 +59,11 @@ mlp_grid = {
     'solver': Categorical(['adam', 'sgd']),
     'alpha': Real(0.0001, 0.01, prior='log-uniform'),
     'learning_rate_init': Real(0.001, 0.01, prior='log-uniform')
+}
+svm_grid = {
+    'C': Real(1e-3, 1e3, prior='log-uniform'),
+    'kernel': Categorical(['linear', 'rbf']),
+    'gamma': Real(1e-4, 1e-1, prior='log-uniform')
 }
 
 def load_data(X_path, target):
@@ -133,6 +140,7 @@ def main():
             dataset_results = {}
 
             # RandomForest
+            print('\t starting RF train')
             rf_bayes = BayesSearchCV(
                 estimator=RandomForestClassifier(),
                 search_spaces=rf_grid,
@@ -147,6 +155,7 @@ def main():
             rf_best_params = rf_bayes.best_params_.copy()
             #rf_best_params['class_weight'] = 'balanced'
             rf_final = RandomForestClassifier(**rf_best_params)
+            
             y_pred = cross_val_predict(rf_final, X, y, cv=3)
             y_proba = cross_val_predict(rf_final, X, y, cv=3, method='predict_proba')
             acc = accuracy_score(y, y_pred)
@@ -161,6 +170,7 @@ def main():
             }
 
             # XGBoost
+            print('\t starting XGBoost train')
             xgb_bayes = BayesSearchCV(
                 estimator=XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
                 search_spaces=xgb_grid,
@@ -187,6 +197,7 @@ def main():
             }
 
             # MLP
+            print('\t starting MLP train')
             mlp_bayes = BayesSearchCV(
                 estimator=MLPClassifier(max_iter=2000),
                 search_spaces=mlp_grid,
@@ -211,6 +222,58 @@ def main():
                 "confusion_matrix": cm.tolist(),
                 "best_params": mlp_bayes.best_params_
             }
+
+            # SVM
+            '''
+            # If we want to include the hyperparameter search
+            svm_bayes = BayesSearchCV(
+                estimator=SVC(probability=True),
+                search_spaces=svm_grid,
+                n_iter=32,
+                cv=3,
+                n_jobs=-1,
+                random_state=42,
+                verbose=0
+            )
+            svm_bayes.fit(X, y)
+            log_search_results(svm_bayes, "SVM", all_results)
+            svm_final = SVC(probability=True, **svm_bayes.best_params_)
+            y_pred = cross_val_predict(svm_final, X, y, cv=3)
+            y_proba = cross_val_predict(svm_final, X, y, cv=3, method='predict_proba')
+            acc = accuracy_score(y, y_pred)
+            auc = plot_and_save_roc(y, y_proba, le, "SVM", dataset_name, target, RESULTS_DEST / target / dataset_name)
+            cm = confusion_matrix(y, y_pred)
+            plot_and_save_confusion_matrix(cm, le, "SVM", dataset_name, target, RESULTS_DEST / target / dataset_name)
+            dataset_results["SVM"] = {
+                "accuracy": acc,
+                "auc": auc,
+                "confusion_matrix": cm.tolist(),
+                "best_params": svm_bayes.best_params_
+            }
+            '''
+
+            # SVM
+            print('\t starting SVM train')
+            svm_final = SVC(probability=True, kernel='rbf', C=1.0, gamma='scale', random_state=42)
+            cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
+            y_pred = np.zeros_like(y)
+            y_proba = np.zeros((len(y), len(le.classes_)))
+            for i, (train_idx, test_idx) in enumerate(tqdm(cv.split(X, y), total=3, desc="CV Folds")):
+                svm_final.fit(X.iloc[train_idx], y[train_idx])
+                y_pred[test_idx] = svm_final.predict(X.iloc[test_idx])
+                y_proba[test_idx] = svm_final.predict_proba(X.iloc[test_idx])
+
+            acc = accuracy_score(y, y_pred)
+            auc = plot_and_save_roc(y, y_proba, le, "SVM", dataset_name, target, RESULTS_DEST / target / DATASET_NAME)
+            cm = confusion_matrix(y, y_pred)
+            plot_and_save_confusion_matrix(cm, le, "SVM", dataset_name, target, RESULTS_DEST / target / DATASET_NAME)
+            dataset_results["SVM"] = {
+                "accuracy": acc,
+                "auc": auc,
+                "confusion_matrix": cm.tolist(),
+                "best_params": {"kernel": "rbf", "C": 1.0, "gamma": "scale"}
+            }
+                
 
             # Save hyperparameters for this dataset/target
             hyperparam_dir = HYPERPARAM_DEST / target
