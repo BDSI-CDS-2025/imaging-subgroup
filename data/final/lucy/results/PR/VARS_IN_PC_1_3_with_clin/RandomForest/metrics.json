@@ -1,0 +1,22 @@
+{
+  "accuracy": 0.6407119021134594,
+  "auc": 0.5866911661083829,
+  "confusion_matrix": [
+    [
+      21,
+      296
+    ],
+    [
+      27,
+      555
+    ]
+  ],
+  "best_params": {
+    "bootstrap": true,
+    "class_weight": null,
+    "max_depth": 5,
+    "min_samples_leaf": 1,
+    "min_samples_split": 5,
+    "n_estimators": 100
+  }
+}
