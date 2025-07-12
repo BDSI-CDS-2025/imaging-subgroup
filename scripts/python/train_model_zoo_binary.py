@@ -25,6 +25,7 @@ from sklearn.model_selection import cross_val_predict
 from sklearn.svm import SVC
 from sklearn.model_selection import StratifiedKFold
 
+from tqdm import tqdm
 from config import SETUP
 
 warnings.filterwarnings("ignore")
@@ -155,7 +156,6 @@ def main():
             rf_best_params = rf_bayes.best_params_.copy()
             #rf_best_params['class_weight'] = 'balanced'
             rf_final = RandomForestClassifier(**rf_best_params)
-            
             y_pred = cross_val_predict(rf_final, X, y, cv=3)
             y_proba = cross_val_predict(rf_final, X, y, cv=3, method='predict_proba')
             acc = accuracy_score(y, y_pred)
@@ -264,9 +264,9 @@ def main():
                 y_proba[test_idx] = svm_final.predict_proba(X.iloc[test_idx])
 
             acc = accuracy_score(y, y_pred)
-            auc = plot_and_save_roc(y, y_proba, le, "SVM", dataset_name, target, RESULTS_DEST / target / DATASET_NAME)
+            auc = plot_and_save_roc(y, y_proba, le, "SVM", dataset_name, target, RESULTS_DEST / target / dataset_name)
             cm = confusion_matrix(y, y_pred)
-            plot_and_save_confusion_matrix(cm, le, "SVM", dataset_name, target, RESULTS_DEST / target / DATASET_NAME)
+            plot_and_save_confusion_matrix(cm, le, "SVM", dataset_name, target, RESULTS_DEST / target / dataset_name)
             dataset_results["SVM"] = {
                 "accuracy": acc,
                 "auc": auc,
