@@ -1,23 +1,23 @@
 {
   "RandomForest": {
     "accuracy": 0.8176538908246226,
-    "auc": 0.5370023587878352,
+    "auc": 0.5176098817004879,
     "confusion_matrix": [
       [
-        702,
-        1
+        701,
+        2
       ],
       [
-        156,
-        2
+        155,
+        3
       ]
     ],
     "best_params": {
       "bootstrap": true,
       "class_weight": "balanced",
-      "max_depth": 20,
-      "min_samples_leaf": 1,
-      "min_samples_split": 5,
+      "max_depth": 10,
+      "min_samples_leaf": 2,
+      "min_samples_split": 2,
       "n_estimators": 200
     }
   },
@@ -44,12 +44,12 @@
     }
   },
   "MLP": {
-    "accuracy": 0.8153310104529616,
-    "auc": 0.4862839188288889,
+    "accuracy": 0.8141695702671312,
+    "auc": 0.49884761510344455,
     "confusion_matrix": [
       [
-        702,
-        1
+        701,
+        2
       ],
       [
         158,
@@ -57,11 +57,30 @@
       ]
     ],
     "best_params": {
-      "activation": "tanh",
-      "alpha": 0.0025190853906848607,
-      "hidden_layer_sizes": 94,
-      "learning_rate_init": 0.0026050801373046378,
-      "solver": "adam"
+      "activation": "relu",
+      "alpha": 0.0025787348253271695,
+      "hidden_layer_sizes": 99,
+      "learning_rate_init": 0.0022440770386812207,
+      "solver": "sgd"
+    }
+  },
+  "SVM": {
+    "accuracy": 0.8164924506387921,
+    "auc": 0.4954714874768173,
+    "confusion_matrix": [
+      [
+        703,
+        0
+      ],
+      [
+        158,
+        0
+      ]
+    ],
+    "best_params": {
+      "kernel": "rbf",
+      "C": 1.0,
+      "gamma": "scale"
     }
   }
 }
