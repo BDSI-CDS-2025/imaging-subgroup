@@ -21,8 +21,58 @@ CSV_OUT = path / "data" / "final" / "lucy" / "summary_auc.csv"
 # Expected targets (predictors)
 PREDICTORS = ["ER", "PR", "HER2"]
 # List of datasets you want to include
-DATASETS = ["ALL_IMG", "CL_UNCORR", "PC1", "PC1_3", "PC_90", "VARS_IN_PC1", "VARS_IN_PC_1_3", "VARS_IN_PC_90"]
+DATASETS = ["ALL_IMG",
+            "CL_UNCORR",
+            "PC1",
+            "PC1_3",
+            "PC_90",
+            "VARS_IN_PC1",
+            "VARS_IN_PC_1_3",
+            "VARS_IN_PC_90",
+            "ALL_IMG_with_clin",
+            "CL_UNCORR_with_clin",
+            "PC1_with_clin",
+            "PC1_3_with_clin",
+            "PC_90_with_clin",
+            "VARS_IN_PC1_with_clin",
+            "VARS_IN_PC_1_3_with_clin",
+            "VARS_IN_PC_90_with_clin"]
 REF_AUC = {'ER' : .649, 'PR' : .622, 'HER2' : .5}
+
+def plot_model_predictor_boxplot(df, metric="auc"):
+    if df.empty:
+        print("No metrics found. DataFrame is empty.")
+        return
+    # Create a new column that combines model and predictor for grouped plotting
+    df['model_predictor'] = df['model'] + " " + df['predictor']
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(data=df, x="model_predictor", y=metric, palette="Set3")
+    sns.swarmplot(data=df, x="model_predictor", y=metric, color=".25", alpha=0.7)
+    plt.title(f"Overall {metric.capitalize()} Distribution by Model and Predictor")
+    plt.ylabel(metric.capitalize())
+    plt.xlabel("Model and Predictor")
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+    outpath = SAVE_DIR / f"overall_{metric}_by_model_predictor.png"
+    plt.savefig(outpath, dpi=300)
+    plt.close()
+    print(f"Saved: {outpath}")
+
+def plot_overall_predictor_boxplot(df, metric="auc"):
+    if df.empty:
+        print("No metrics found. DataFrame is empty.")
+        return
+    plt.figure(figsize=(8, 6))
+    sns.boxplot(data=df, x="predictor", y=metric, palette="Set3")
+    sns.swarmplot(data=df, x="predictor", y=metric, color=".25", alpha=0.7)
+    plt.title(f"Overall {metric.capitalize()} Distribution by Predictor")
+    plt.ylabel(metric.capitalize())
+    plt.xlabel("Predictor")
+    plt.tight_layout()
+    outpath = SAVE_DIR / f"overall_{metric}_by_predictor.png"
+    plt.savefig(outpath, dpi=300)
+    plt.close()
+    print(f"Saved: {outpath}")
 
 def collect_metrics(base_dir=BASE_DIR):
     records = []
@@ -59,16 +109,17 @@ def plot_grouped_bar(df, metric="accuracy"):
     for predictor in df["predictor"].unique():
         plt.figure(figsize=(10, 6))
         sub = df[df["predictor"] == predictor]
-        sns.barplot(
+        ax = sns.barplot(
             data=sub,
             x="dataset", y=metric, hue="model",
             palette="Set2"
         )
+        # Set the bottom of y axis to 0.45
+        plt.ylim(0.45, ax.get_ylim()[1])
         plt.title(f"{predictor}: Model {metric.capitalize()} by Dataset")
         plt.xticks(rotation=45)
         plt.tight_layout()
         plt.legend(title="Model")
-        # Plot horizontal reference line for AUC, if applicable
         if metric == "auc" and predictor in REF_AUC:
             plt.axhline(REF_AUC[predictor], color='red', linestyle='--', label='Reference AUC')
             plt.legend(title="Model", loc="lower right")
@@ -148,7 +199,9 @@ if __name__ == "__main__":
     if df.empty:
         print("No metrics found. Exiting.")
     else:
-        plot_grouped_bar(df, metric="auc")
-        plot_overall_model_performance(df, metric="auc")
-        plot_dataset_performance_by_feature(df, metric="auc")
+        #plot_grouped_bar(df, metric="auc")
+        #plot_overall_model_performance(df, metric="auc")
+        #plot_dataset_performance_by_feature(df, metric="auc")
+        #plot_overall_predictor_boxplot(df, metric="auc")
+        #plot_model_predictor_boxplot(df, metric="auc")  # NEW plot: each model & predictor combination
         create_summary_csv(df)
