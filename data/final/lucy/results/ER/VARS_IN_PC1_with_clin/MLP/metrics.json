@@ -1,0 +1,21 @@
+{
+  "accuracy": 0.7422222222222222,
+  "auc": 0.49999999999999994,
+  "confusion_matrix": [
+    [
+      0,
+      231
+    ],
+    [
+      1,
+      668
+    ]
+  ],
+  "best_params": {
+    "activation": "relu",
+    "alpha": 0.0028539836866041807,
+    "hidden_layer_sizes": 97,
+    "learning_rate_init": 0.002069186296126171,
+    "solver": "sgd"
+  }
+}

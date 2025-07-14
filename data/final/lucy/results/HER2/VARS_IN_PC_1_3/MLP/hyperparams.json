@@ -1,0 +1,306 @@
+{
+  "best_params": {
+    "activation": "relu",
+    "alpha": 0.004321753967138224,
+    "hidden_layer_sizes": 87,
+    "learning_rate_init": 0.0017970255745729236,
+    "solver": "sgd"
+  },
+  "best_score": 0.8241069330199766,
+  "cv_results": {
+    "mean_test_score": [
+      0.8197591069330199,
+      0.8230199764982373,
+      0.6507696827262045,
+      0.8230199764982373,
+      0.8230199764982373,
+      0.8230199764982373,
+      0.8230199764982373,
+      0.8230199764982373,
+      0.8230199764982373,
+      0.8241069330199766,
+      0.4345887191539366,
+      0.6773678025851939,
+      0.8197591069330199,
+      0.8230199764982373,
+      0.8219330199764983,
+      0.8230199764982373,
+      0.8230199764982373,
+      0.8230199764982373,
+      0.8230199764982373,
+      0.8241069330199766,
+      0.8230199764982373,
+      0.8241069330199766,
+      0.8230199764982373,
+      0.8197591069330201,
+      0.8230199764982373,
+      0.8230199764982373,
+      0.8230199764982373,
+      0.8230199764982373,
+      0.8230199764982373,
+      0.7061574618096358,
+      0.69475910693302,
+      0.8230199764982373
+    ],
+    "std_test_score": [
+      0.008023184751047597,
+      0.002529075224463465,
+      0.1971752482708825,
+      0.002529075224463465,
+      0.002529075224463465,
+      0.002529075224463465,
+      0.002529075224463465,
+      0.002529075224463465,
+      0.002529075224463465,
+      0.004217756191244067,
+      0.3152435617195088,
+      0.24441594277057568,
+      0.005378406747811639,
+      0.002529075224463465,
+      0.0021106329700879083,
+      0.002529075224463465,
+      0.002529075224463465,
+      0.002529075224463465,
+      0.002529075224463465,
+      0.004217756191244067,
+      0.002529075224463465,
+      0.004217756191244067,
+      0.002529075224463465,
+      0.005378406747811639,
+      0.002529075224463465,
+      0.002529075224463465,
+      0.002529075224463465,
+      0.002529075224463465,
+      0.002529075224463465,
+      0.18857471190084488,
+      0.257715330752878,
+      0.002529075224463465
+    ],
+    "params": [
+      {
+        "activation": "relu",
+        "alpha": 0.0028539836866041807,
+        "hidden_layer_sizes": 97,
+        "learning_rate_init": 0.002069186296126171,
+        "solver": "sgd"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.005842928269761149,
+        "hidden_layer_sizes": 65,
+        "learning_rate_init": 0.008937661586109223,
+        "solver": "sgd"
+      },
+      {
+        "activation": "relu",
+        "alpha": 0.006877728743793541,
+        "hidden_layer_sizes": 55,
+        "learning_rate_init": 0.002712269260220244,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.00022066991249460104,
+        "hidden_layer_sizes": 80,
+        "learning_rate_init": 0.006349869225424211,
+        "solver": "sgd"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0007517239253342655,
+        "hidden_layer_sizes": 76,
+        "learning_rate_init": 0.005196527885218496,
+        "solver": "sgd"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.007563790218678245,
+        "hidden_layer_sizes": 58,
+        "learning_rate_init": 0.001543210934155101,
+        "solver": "sgd"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0035540927532494103,
+        "hidden_layer_sizes": 68,
+        "learning_rate_init": 0.0074873010449668246,
+        "solver": "sgd"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.006918603669668353,
+        "hidden_layer_sizes": 75,
+        "learning_rate_init": 0.006881077307132502,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0025190853906848607,
+        "hidden_layer_sizes": 94,
+        "learning_rate_init": 0.0026050801373046378,
+        "solver": "adam"
+      },
+      {
+        "activation": "relu",
+        "alpha": 0.004321753967138224,
+        "hidden_layer_sizes": 87,
+        "learning_rate_init": 0.0017970255745729236,
+        "solver": "sgd"
+      },
+      {
+        "activation": "relu",
+        "alpha": 0.01,
+        "hidden_layer_sizes": 50,
+        "learning_rate_init": 0.001,
+        "solver": "sgd"
+      },
+      {
+        "activation": "relu",
+        "alpha": 0.006399411350561957,
+        "hidden_layer_sizes": 90,
+        "learning_rate_init": 0.008806521751393433,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.00011990096014341391,
+        "hidden_layer_sizes": 50,
+        "learning_rate_init": 0.0015598451797029379,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.008473748446750832,
+        "hidden_layer_sizes": 77,
+        "learning_rate_init": 0.001,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.01,
+        "hidden_layer_sizes": 100,
+        "learning_rate_init": 0.001,
+        "solver": "sgd"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0001,
+        "hidden_layer_sizes": 100,
+        "learning_rate_init": 0.001,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0001,
+        "hidden_layer_sizes": 81,
+        "learning_rate_init": 0.00898422089504537,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0001,
+        "hidden_layer_sizes": 50,
+        "learning_rate_init": 0.01,
+        "solver": "sgd"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0001,
+        "hidden_layer_sizes": 81,
+        "learning_rate_init": 0.01,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0001,
+        "hidden_layer_sizes": 81,
+        "learning_rate_init": 0.001,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0001,
+        "hidden_layer_sizes": 68,
+        "learning_rate_init": 0.001,
+        "solver": "adam"
+      },
+      {
+        "activation": "relu",
+        "alpha": 0.0001,
+        "hidden_layer_sizes": 91,
+        "learning_rate_init": 0.01,
+        "solver": "sgd"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0001,
+        "hidden_layer_sizes": 84,
+        "learning_rate_init": 0.001,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0001,
+        "hidden_layer_sizes": 82,
+        "learning_rate_init": 0.001,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0001,
+        "hidden_layer_sizes": 75,
+        "learning_rate_init": 0.01,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.01,
+        "hidden_layer_sizes": 75,
+        "learning_rate_init": 0.01,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.01,
+        "hidden_layer_sizes": 76,
+        "learning_rate_init": 0.01,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.01,
+        "hidden_layer_sizes": 77,
+        "learning_rate_init": 0.01,
+        "solver": "adam"
+      },
+      {
+        "activation": "tanh",
+        "alpha": 0.0024599675308373493,
+        "hidden_layer_sizes": 76,
+        "learning_rate_init": 0.01,
+        "solver": "adam"
+      },
+      {
+        "activation": "relu",
+        "alpha": 0.00036525864349744346,
+        "hidden_layer_sizes": 54,
+        "learning_rate_init": 0.002536030173396248,
+        "solver": "adam"
+      },
+      {
+        "activation": "relu",
+        "alpha": 0.0038012359966895564,
+        "hidden_layer_sizes": 50,
+        "learning_rate_init": 0.001,
+        "solver": "sgd"
+      },
+      {
+        "activation": "relu",
+        "alpha": 0.0022998532319603348,
+        "hidden_layer_sizes": 97,
+        "learning_rate_init": 0.0022947459409537398,
+        "solver": "sgd"
+      }
+    ]
+  }
+}
