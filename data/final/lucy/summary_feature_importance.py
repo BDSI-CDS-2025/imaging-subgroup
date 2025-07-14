@@ -142,7 +142,7 @@ def analyze_feature_importance(target='ER', selected_datasets=None, predictors=N
 
 def main():
     parser = argparse.ArgumentParser(description="Feature Importance Analysis")
-    parser.add_argument("--target", type=str, default="PR", help="Target variable (e.g. ER, PR, HER2)")
+    parser.add_argument("--target", type=str, default="HER2", help="Target variable (e.g. ER, PR, HER2)")
     parser.add_argument("--datasets", type=str, default=None, help="Comma-separated list of dataset names to include")
     parser.add_argument("--predictors", type=str, default=None, help="Comma-separated list of predictor columns to include")
     args = parser.parse_args()
