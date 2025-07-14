@@ -20,8 +20,13 @@ from pathlib import Path
 
 # ------------------------------------------
 # User adjustable parameters - modify these as needed
-SELECTED_DATASETS = ["ALL_IMG", "ALL_IMG_with_clin", "PC1"]  # Modify as needed.
-SELECTED_MODELS = ["XGBoost", "RandomForest", "MLP", "SVM", "LogisticRegression", "LASSO", "ElasticNet"]
+SELECTED_DATASETS = ["ALL_IMG",
+                     "ALL_IMG_with_clin",
+                     "PC1_3",
+                     "VARS_IN_PC_1_3",
+                     "PC1_3_with_clin",
+                     "CL_UNCORR"]  # Modify as needed.
+SELECTED_MODELS = ["XGBoost", "RandomForest", "MLP", "ElasticNet"]
 SELECTED_PREDICTORS = ["ER", "PR", "HER2"]  # Modify as needed.
 # ------------------------------------------
 
@@ -29,7 +34,7 @@ SELECTED_PREDICTORS = ["ER", "PR", "HER2"]  # Modify as needed.
 REF_AUC = {
     "ER": 0.65,
     "PR": 0.60,
-    "HER2": 0.55
+    "HER2": 0.50
 }
 
 # File paths
@@ -64,22 +69,7 @@ print(f"Saved filtered summary CSV: {CSV_OUT}")
 df_filtered['model_predictor'] = df_filtered['model'] + " " + df_filtered['predictor']
 
 # --------------------
-# Plot 1: Boxplot for each model-predictor combination
-plt.figure(figsize=(12, 6))
-sns.boxplot(data=df_filtered, x="model_predictor", y="auc", palette="Set3")
-sns.swarmplot(data=df_filtered, x="model_predictor", y="auc", color=".25", alpha=0.7)
-plt.title("AUC Distribution by Model and Predictor")
-plt.ylabel("AUC")
-plt.xlabel("Model and Predictor")
-plt.xticks(rotation=45, ha="right")
-plt.tight_layout()
-boxplot_path = FIGURES_DIR / "auc_boxplot_by_model_predictor.png"
-plt.savefig(boxplot_path, dpi=300)
-plt.close()
-print(f"Saved figure: {boxplot_path}")
-
-# --------------------
-# Plot 2: Grouped bar chart for AUC by dataset (for each predictor)
+# Grouped bar chart for AUC by dataset (for each predictor)
 for predictor in df_filtered["predictor"].unique():
     sub_df = df_filtered[df_filtered["predictor"] == predictor]
     plt.figure(figsize=(10, 6))
@@ -101,17 +91,41 @@ for predictor in df_filtered["predictor"].unique():
     print(f"Saved figure: {barplot_path}")
 
 # --------------------
-# Plot 3: Overall predictor boxplot showing AUC distribution by predictor
-plt.figure(figsize=(8, 6))
-sns.boxplot(data=df_filtered, x="predictor", y="auc", palette="Set3")
-sns.swarmplot(data=df_filtered, x="predictor", y="auc", color=".25", alpha=0.7)
-plt.title("Overall AUC Distribution by Predictor")
-plt.ylabel("AUC")
-plt.xlabel("Predictor")
-plt.tight_layout()
-overall_boxplot_path = FIGURES_DIR / "overall_auc_by_predictor.png"
-plt.savefig(overall_boxplot_path, dpi=300)
-plt.close()
-print(f"Saved figure: {overall_boxplot_path}")
+# Grouped bar chart for AUC by dataset (for each model)
+for model in df_filtered["model"].unique():
+    sub_df = df_filtered[df_filtered["model"] == model]
+    plt.figure(figsize=(10, 6))
+    ax = sns.barplot(data=sub_df, x="dataset", y="auc", hue="predictor", palette="Set1")
+    # Set the y-axis lower bound to 0.45
+    plt.ylim(0.45, ax.get_ylim()[1])
+    plt.title(f"{model}: AUC by Dataset and Predictor")
+    plt.ylabel("AUC")
+    plt.xlabel("Dataset")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    barplot_path = FIGURES_DIR / f"{model}_auc_barplot.png"
+    plt.savefig(barplot_path, dpi=300)
+    plt.close()
+    print(f"Saved figure: {barplot_path}")
+
+for predictor in df_filtered["predictor"].unique():
+    sub_df = df_filtered[df_filtered["predictor"] == predictor]
+    plt.figure(figsize=(10, 6))
+    ax = sns.barplot(data=sub_df, x="model", y="auc", hue="dataset", palette="Set3")
+    # Set the y-axis lower bound to 0.45
+    plt.ylim(0.45, ax.get_ylim()[1])
+    plt.title(f"{predictor}: AUC by Model and Dataset")
+    plt.ylabel("AUC")
+    plt.xlabel("Model")
+    plt.xticks(rotation=45)
+    # Add reference line if available
+    if predictor in REF_AUC:
+        plt.axhline(REF_AUC[predictor], color='red', linestyle='--', label='Reference AUC')
+        plt.legend(title="Dataset", loc="lower right")
+    plt.tight_layout()
+    barplot_path = FIGURES_DIR / f"{predictor}_auc_barplot_by_model.png"
+    plt.savefig(barplot_path, dpi=300)
+    plt.close()
+    print(f"Saved figure: {barplot_path}")
 
 print("All figures generated successfully.")

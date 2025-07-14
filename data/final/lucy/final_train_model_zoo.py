@@ -33,14 +33,14 @@ import joblib
 warnings.filterwarnings("ignore")
 
 # === FLAGS ===
-TARGETS = {'ER': True, 'PR': True, 'HER2': True}  # Set to False to skip
-MODELS = {'RandomForest': False,
-          'XGBoost': False,
-          'MLP': False,
-          'SVM': False,
-          'LogisticRegression': True,
-          'LASSO': True,
-          'ElasticNet': True}  # Set to False to skip
+TARGETS = {'ER': False, 'PR': True, 'HER2': True}  # Set to False to skip
+MODELS = {'RandomForest': True,
+          'XGBoost': True,
+          'MLP': True,
+          'SVM': True,
+          'LogisticRegression': False,
+          'LASSO': False,
+          'ElasticNet': False}  # Set to False to skip
 
 DATA_DIR = Path.cwd() / "data" / "final"
 CLINICAL_PATH = Path.cwd() / "data" / "raw" / "clinicalData_clean.csv"
@@ -50,21 +50,21 @@ N_SPLITS = 5
 
 # List all CSVs in data/final
 DATASETS = {'VARS_IN_PC1': False,
-            'CL_UNCORR': False,
+            'CL_UNCORR': True,
             'VARS_IN_PC_90': False,
-            'VARS_IN_PC_90_with_clin': True,
-            'PC_90': True,
-            'VARS_IN_PC_1_3_with_clin': True,
-            'VARS_IN_PC_1_3': True,
-            'ALL_IMG': True,
-            'PC1': True,
-            'PC1_3': True,
-            'PC1_3_with_clin': True,
-            'ALL_IMG_with_clin': True,
-            'CL_UNCORR_with_clin': True,
-            'VARS_IN_PC1_with_clin': True,
-            'PC_90_with_clin': True,
-            'PC1_with_clin': True}
+            'VARS_IN_PC_90_with_clin': False,
+            'PC_90': False,
+            'VARS_IN_PC_1_3_with_clin': False,
+            'VARS_IN_PC_1_3': False,
+            'ALL_IMG': False,
+            'PC1': False,
+            'PC1_3': False,
+            'PC1_3_with_clin': False,
+            'ALL_IMG_with_clin': False,
+            'CL_UNCORR_with_clin': False,
+            'VARS_IN_PC1_with_clin': False,
+            'PC_90_with_clin': False,
+            'PC1_with_clin': False}
 
 rf_grid = {
     'n_estimators': [100, 200, 500],
