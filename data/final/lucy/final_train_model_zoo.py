@@ -34,7 +34,13 @@ warnings.filterwarnings("ignore")
 
 # === FLAGS ===
 TARGETS = {'ER': True, 'PR': True, 'HER2': True}  # Set to False to skip
-MODELS = {'RandomForest': True, 'XGBoost': True, 'MLP': True, 'SVM': True}  # Set to False to skip
+MODELS = {'RandomForest': False,
+          'XGBoost': False,
+          'MLP': False,
+          'SVM': False,
+          'LogisticRegression': True,
+          'LASSO': True,
+          'ElasticNet': True}  # Set to False to skip
 
 DATA_DIR = Path.cwd() / "data" / "final"
 CLINICAL_PATH = Path.cwd() / "data" / "raw" / "clinicalData_clean.csv"
@@ -87,6 +93,16 @@ svm_grid = {
     'C': Real(1e-3, 1e3, prior='log-uniform'),
     'kernel': Categorical(['linear', 'rbf']),
     'gamma': Real(1e-4, 1e-1, prior='log-uniform')
+}
+lr_grid = {
+    'C': Real(1e-3, 1e3, prior='log-uniform')
+}
+lasso_grid = {
+    'C': Real(1e-3, 1e3, prior='log-uniform')
+}
+enet_grid = {
+    'C': Real(1e-3, 1e3, prior='log-uniform'),
+    'l1_ratio': Real(0, 1)  # Only valid when using 'elasticnet'
 }
 
 def load_data(X_path, target):
@@ -164,7 +180,7 @@ def train_and_save(model_name, model, param_grid, X, y, le, save_dir):
         # XGBoost needs categorical columns- the estimator is being cloned
         # in BayesSearchCV or crass_val_predict so they types are not
         # handled as expected
-        if model_name == "XGBoost":
+        if model_name in ["XGBoost", "LogisticRegression", "LASSO", "ElasticNet"]:
             # Make a copy of X and convert any categorical columns to integer codes
             X_fit = X.copy()
             cat_cols = X_fit.select_dtypes(include=["category"]).columns
@@ -183,7 +199,7 @@ def train_and_save(model_name, model, param_grid, X, y, le, save_dir):
             verbose=0
         )
 
-        # For XGBoost, use X_fit (with categorical columns as codes); otherwise, use X.
+        # For XGBoost and new models, use X_fit (with categorical columns as codes); otherwise, use X.
         fit_X = X_fit if model_name == "XGBoost" else X
         search.fit(fit_X, y)
         best_params = search.best_params_
@@ -243,6 +259,18 @@ def main():
                 elif model_name == "SVM":
                     model = SVC(probability=True, kernel='rbf', C=1.0, gamma='scale', random_state=42)
                     param_grid = svm_grid
+                elif model_name == "LogisticRegression":
+                    from sklearn.linear_model import LogisticRegression
+                    model = LogisticRegression(random_state=42, solver='lbfgs', max_iter=1000)
+                    param_grid = lr_grid
+                elif model_name == "LASSO":
+                    from sklearn.linear_model import LogisticRegression
+                    model = LogisticRegression(penalty='l1', random_state=42, solver='saga', max_iter=1000)
+                    param_grid = lasso_grid
+                elif model_name == "ElasticNet":
+                    from sklearn.linear_model import LogisticRegression
+                    model = LogisticRegression(penalty='elasticnet', random_state=42, solver='saga', max_iter=1000)
+                    param_grid = enet_grid
                 else:
                     continue
                 train_and_save(model_name, model, param_grid, X, y, le, model_dir)
