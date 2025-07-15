@@ -1,0 +1,31 @@
+{
+  "accuracy": 0.8231368186874305,
+  "auc": 0.4988101308856026,
+  "confusion_matrix": [
+    [
+      740,
+      0
+    ],
+    [
+      159,
+      0
+    ]
+  ],
+  "best_params": {
+    "C": 1.0,
+    "break_ties": false,
+    "cache_size": 200,
+    "class_weight": null,
+    "coef0": 0.0,
+    "decision_function_shape": "ovr",
+    "degree": 3,
+    "gamma": "scale",
+    "kernel": "rbf",
+    "max_iter": -1,
+    "probability": true,
+    "random_state": 42,
+    "shrinking": true,
+    "tol": 0.001,
+    "verbose": false
+  }
+}

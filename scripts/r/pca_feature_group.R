@@ -69,13 +69,14 @@ for (group in groups) {
   # scree plot: calculate explained variance percentages
   percent <- round(100 * pca$sdev ^ 2 / sum(pca$sdev ^ 2), 1)
   percent_df <- data.frame(
-    PC = paste0("PC", seq_along(percent)),
+    PC = seq_along(percent),
     Percent = percent
   )
 
   # histogram of explained variance percentages
   scree <- ggplot(percent_df, aes(x = PC, y = Percent)) +
     geom_col() +
+    geom_text(aes(label = PC), vjust = -0.5) +
     xlab("Principal Component") +
     ylab("Explained Variance (%)") +
     ggtitle(paste("PCA Variance Histogram -", group_name))

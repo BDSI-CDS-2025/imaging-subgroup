@@ -1,0 +1,21 @@
+{
+  "SVM": {
+    "accuracy": 0.8164924506387921,
+    "auc": 0.48761186236202886,
+    "confusion_matrix": [
+      [
+        703,
+        0
+      ],
+      [
+        158,
+        0
+      ]
+    ],
+    "best_params": {
+      "kernel": "rbf",
+      "C": 1.0,
+      "gamma": "scale"
+    }
+  }
+}
