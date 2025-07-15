@@ -9,7 +9,7 @@ from pathlib import Path
 path = Path.cwd()
 
 # Temporary with only one dataset for debugging.
-SETUP = {
+SETUP2 = {
     'PC1': {
         'X': path / "data" / "interim" / "pc_by_feature_group_for_patients.csv",
         'hyperparameters_file': path / "notebooks" / "modeling" / "optimal_params_pc1.json"
@@ -17,7 +17,7 @@ SETUP = {
 }
 
 # Delete SETUP and change name when ready finally.
-SETUP2 = {
+SETUP = {
     'PC1': {
         'X': path / "data" / "interim" / "pc_by_feature_group_for_patients.csv",
         'hyperparameters_file': path / "notebooks" / "modeling" / "optimal_params_pc1.json"
