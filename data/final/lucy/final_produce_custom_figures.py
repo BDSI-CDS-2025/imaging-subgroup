@@ -37,6 +37,16 @@ REF_AUC = {
     "HER2": 0.50
 }
 
+# FIXING THE COLUMN NAMES
+CUSTOM_DATASET_LABELS = {
+    "ALL_IMG": "All Imaging Data",
+    "ALL_IMG_with_clin": "All Imaging\n+ Pre-Biopsy Clinical",
+    "PC1_3": "Scores from\nTop Three Covariates\nin PC1",
+    "VARS_IN_PC_1_3": "Raw Data Values\nfrom Top Three Covariates\nin PC1",
+    "PC1_3_with_clin": "Scores from\nTop Three Covariates\nin PC1\n+ Clinical",
+    "CL_UNCORR": "Uncorrelated Features"
+}
+
 # File paths
 BASE_DIR = Path.cwd() / "data" / "final" / "lucy"
 CSV_INPUT = BASE_DIR / "summary_auc.csv"         # Input CSV file path (same format as summary_auc.csv)
@@ -73,17 +83,37 @@ df_filtered['model_predictor'] = df_filtered['model'] + " " + df_filtered['predi
 for predictor in df_filtered["predictor"].unique():
     sub_df = df_filtered[df_filtered["predictor"] == predictor]
     plt.figure(figsize=(10, 6))
-    ax = sns.barplot(data=sub_df, x="dataset", y="auc", hue="model", palette="Set2")
-    # Set the y-axis lower bound to 0.45
-    plt.ylim(0.45, ax.get_ylim()[1])
+    reference = REF_AUC.get(predictor, 0)
+    sub_df['auc_diff'] = sub_df['auc'] - reference
+
+    ax = sns.barplot(data=sub_df, x="dataset", y="auc_diff", hue="model", palette="Set2")
+    
     plt.title(f"{predictor}: AUC by Dataset and Model")
-    plt.ylabel("AUC")
+    plt.ylabel("Difference from Reference AUC")
     plt.xlabel("Dataset")
     plt.xticks(rotation=45)
-    # Add reference line if available
-    if predictor in REF_AUC:
-        plt.axhline(REF_AUC[predictor], color='red', linestyle='--', label='Reference AUC')
-        plt.legend(title="Model", loc="lower right")
+
+    # Clear the existing annotations and use a different approach
+    for p in ax.containers:
+        # This avoids the ghost annotations issue
+        ax.bar_label(p, labels=[f"{h + reference:.2f}" for h in p.datavalues], 
+                    padding=3, fontsize=8)
+        
+    plt.axhline(0, color='red', linestyle='--', label='_nolegend_')
+
+    # Fix legend
+    handles, labels = ax.get_legend_handles_labels()
+    new_labels = [CUSTOM_DATASET_LABELS.get(lbl, lbl) for lbl in labels]
+    ax.legend(handles, new_labels, title="Dataset", 
+          bbox_to_anchor=(1.05, 1), 
+          loc='upper left', 
+          borderaxespad=0.)
+
+    # Update custom dataset labels on the x-axis
+    current_labels = ax.get_xticklabels()
+    new_labels = [CUSTOM_DATASET_LABELS.get(lbl.get_text(), lbl.get_text()) for lbl in current_labels]
+    ax.set_xticklabels(new_labels)
+
     plt.tight_layout()
     barplot_path = FIGURES_DIR / f"{predictor}_auc_barplot.png"
     plt.savefig(barplot_path, dpi=300)
@@ -94,14 +124,22 @@ for predictor in df_filtered["predictor"].unique():
 # Grouped bar chart for AUC by dataset (for each model)
 for model in df_filtered["model"].unique():
     sub_df = df_filtered[df_filtered["model"] == model]
+
     plt.figure(figsize=(10, 6))
     ax = sns.barplot(data=sub_df, x="dataset", y="auc", hue="predictor", palette="Set1")
-    # Set the y-axis lower bound to 0.45
-    plt.ylim(0.45, ax.get_ylim()[1])
+    
     plt.title(f"{model}: AUC by Dataset and Predictor")
     plt.ylabel("AUC")
     plt.xlabel("Dataset")
     plt.xticks(rotation=45)
+
+    # Update custom dataset labels on the x-axis
+    current_labels = ax.get_xticklabels()
+    new_labels = [CUSTOM_DATASET_LABELS.get(lbl.get_text(), lbl.get_text()) for lbl in current_labels]
+    ax.set_xticklabels(new_labels)
+
+    ax.legend(loc='upper left', bbox_to_anchor=(1.05, 1), borderaxespad=0.)
+
     plt.tight_layout()
     barplot_path = FIGURES_DIR / f"{model}_auc_barplot.png"
     plt.savefig(barplot_path, dpi=300)
@@ -111,17 +149,32 @@ for model in df_filtered["model"].unique():
 for predictor in df_filtered["predictor"].unique():
     sub_df = df_filtered[df_filtered["predictor"] == predictor]
     plt.figure(figsize=(10, 6))
-    ax = sns.barplot(data=sub_df, x="model", y="auc", hue="dataset", palette="Set3")
-    # Set the y-axis lower bound to 0.45
-    plt.ylim(0.45, ax.get_ylim()[1])
+    reference = REF_AUC.get(predictor, 0)
+    sub_df['auc_diff'] = sub_df['auc'] - reference
+
+    ax = sns.barplot(data=sub_df, x="model", y="auc_diff", hue="dataset", palette="Set3")
+
     plt.title(f"{predictor}: AUC by Model and Dataset")
-    plt.ylabel("AUC")
+    plt.ylabel("Difference from Reference AUC")
     plt.xlabel("Model")
     plt.xticks(rotation=45)
-    # Add reference line if available
-    if predictor in REF_AUC:
-        plt.axhline(REF_AUC[predictor], color='red', linestyle='--', label='Reference AUC')
-        plt.legend(title="Dataset", loc="lower right")
+    
+    plt.axhline(0, color='red', linestyle='--', label='_nolegend_')
+
+    # Clear the existing annotations and use a different approach
+    for p in ax.containers:
+        # This avoids the ghost annotations issue
+        ax.bar_label(p, labels=[f"{h + reference:.2f}" for h in p.datavalues], 
+                    padding=3, fontsize=8)
+
+    # Fix legend
+    handles, labels = ax.get_legend_handles_labels()
+    new_labels = [CUSTOM_DATASET_LABELS.get(lbl, lbl) for lbl in labels]
+    ax.legend(handles, new_labels, title="Dataset", 
+          bbox_to_anchor=(1.05, 1), 
+          loc='upper left', 
+          borderaxespad=0.)
+
     plt.tight_layout()
     barplot_path = FIGURES_DIR / f"{predictor}_auc_barplot_by_model.png"
     plt.savefig(barplot_path, dpi=300)

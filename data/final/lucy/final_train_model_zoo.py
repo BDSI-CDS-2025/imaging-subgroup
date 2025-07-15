@@ -33,14 +33,14 @@ import joblib
 warnings.filterwarnings("ignore")
 
 # === FLAGS ===
-TARGETS = {'ER': False, 'PR': True, 'HER2': True}  # Set to False to skip
-MODELS = {'RandomForest': True,
-          'XGBoost': True,
-          'MLP': True,
-          'SVM': True,
-          'LogisticRegression': False,
-          'LASSO': False,
-          'ElasticNet': False}  # Set to False to skip
+TARGETS = {'ER': True, 'PR': False, 'HER2': False}  # Set to False to skip
+MODELS = {'RandomForest': False,
+          'XGBoost': False,
+          'MLP': False,
+          'SVM': False,
+          'LogisticRegression': True,
+          'LASSO': True,
+          'ElasticNet': True}  # Set to False to skip
 
 DATA_DIR = Path.cwd() / "data" / "final"
 CLINICAL_PATH = Path.cwd() / "data" / "raw" / "clinicalData_clean.csv"
@@ -49,9 +49,9 @@ RESULTS_DIR = Path.cwd() / "data" / "final" / "lucy" / "results"
 N_SPLITS = 5
 
 # List all CSVs in data/final
-DATASETS = {'VARS_IN_PC1': False,
-            'CL_UNCORR': True,
-            'VARS_IN_PC_90': False,
+DATASETS = {'VARS_IN_PC1': True,
+            'CL_UNCORR': False,
+            'VARS_IN_PC_90': True,
             'VARS_IN_PC_90_with_clin': False,
             'PC_90': False,
             'VARS_IN_PC_1_3_with_clin': False,
