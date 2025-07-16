@@ -97,7 +97,7 @@ for predictor in df_filtered["predictor"].unique():
     for p in ax.containers:
         # This avoids the ghost annotations issue
         ax.bar_label(p, labels=[f"{h + reference:.2f}" for h in p.datavalues], 
-                    padding=3, fontsize=8)
+                    padding=3, fontsize=5)
         
     plt.axhline(0, color='red', linestyle='--', label='_nolegend_')
 
@@ -165,7 +165,7 @@ for predictor in df_filtered["predictor"].unique():
     for p in ax.containers:
         # This avoids the ghost annotations issue
         ax.bar_label(p, labels=[f"{h + reference:.2f}" for h in p.datavalues], 
-                    padding=3, fontsize=8)
+                    padding=3, fontsize=5)
 
     # Fix legend
     handles, labels = ax.get_legend_handles_labels()
