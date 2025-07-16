@@ -26,7 +26,7 @@ SELECTED_DATASETS = ["ALL_IMG",
                      "VARS_IN_PC_1_3",
                      "PC1_3_with_clin",
                      "CL_UNCORR"]  # Modify as needed.
-SELECTED_MODELS = ["XGBoost", "RandomForest", "MLP", "ElasticNet"]
+SELECTED_MODELS = ["XGBoost", "RandomForest", "MLP", "ElasticNet", "Superlearner", "Clustering"]
 SELECTED_PREDICTORS = ["ER", "PR", "HER2"]  # Modify as needed.
 # ------------------------------------------
 
@@ -60,7 +60,7 @@ os.makedirs(FIGURES_DIR, exist_ok=True)
 df = pd.read_csv(CSV_INPUT)
 
 # Reshape DataFrame: convert wide format (one column per model) to long format
-models = ["ElasticNet", "LASSO", "LogisticRegression", "MLP", "RandomForest", "SVM", "XGBoost"]
+models = ["ElasticNet", "LASSO", "LogisticRegression", "MLP", "RandomForest", "SVM", "XGBoost", "Superlearner", "Clustering"]
 df_melt = pd.melt(df, id_vars=["predictor", "dataset"], value_vars=models,
                   var_name="model", value_name="auc")
 
