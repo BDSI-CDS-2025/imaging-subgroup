@@ -142,7 +142,7 @@ def analyze_feature_importance(target='ER', selected_datasets=None, predictors=N
 
 def main():
     parser = argparse.ArgumentParser(description="Feature Importance Analysis")
-    parser.add_argument("--target", type=str, default="PR", help="Target variable (e.g. ER, PR, HER2)")
+    parser.add_argument("--target", type=str, default="HER2", help="Target variable (e.g. ER, PR, HER2)")
     parser.add_argument("--datasets", type=str, default=None, help="Comma-separated list of dataset names to include")
     parser.add_argument("--predictors", type=str, default=None, help="Comma-separated list of predictor columns to include")
     args = parser.parse_args()
@@ -152,7 +152,14 @@ def main():
     predictors = args.predictors.split(",") if args.predictors else None
     
     summary, all_imp = analyze_feature_importance(target, selected_datasets, predictors)
-    all_imp.to_csv('all_feature_importance.csv')
+    
+    if all_imp is not None:
+        # Save the results only if available.
+        csv_path = Path.cwd() / "all_feature_importance.csv"
+        all_imp.to_csv(csv_path, index=False)
+        print(f"Feature importance results saved at: {csv_path}")
+    else:
+        print("No feature importance records generated.")
     
     if summary is not None:
         print("Average Feature Importance across models and datasets:")
@@ -163,10 +170,6 @@ def main():
         plt.title(f'Top 10 Important Features for {target}')
         plt.tight_layout()
         output_path = Path.cwd() / f"feature_importance_{target}.png"
-        plt.savefig(output_path)
-        plt.show()
-    else:
-        print("No feature importance records found.")
 
 if __name__ == "__main__":
     main()

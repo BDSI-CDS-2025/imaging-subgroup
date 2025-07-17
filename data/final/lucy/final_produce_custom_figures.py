@@ -20,13 +20,13 @@ from pathlib import Path
 
 # ------------------------------------------
 # User adjustable parameters - modify these as needed
-SELECTED_DATASETS = ["ALL_IMG",
-                     "ALL_IMG_with_clin",
+SELECTED_DATASETS = [#"ALL_IMG",
+                     #"ALL_IMG_with_clin",
                      "PC1_3",
-                     "VARS_IN_PC_1_3",
-                     "PC1_3_with_clin",
-                     "CL_UNCORR"]  # Modify as needed.
-SELECTED_MODELS = ["XGBoost", "RandomForest", "MLP", "ElasticNet", "Superlearner", "Clustering"]
+                     "VARS_IN_PC_1_3",]
+                     #"PC1_3_with_clin",
+                     #"CL_UNCORR"]  # Modify as needed.
+SELECTED_MODELS = ["XGBoost", "RandomForest", "MLP", "LogisticRegression", "Superlearner", "GMM" ,"K-Means", "SVM", "LASSO", "ElasticNet"]
 SELECTED_PREDICTORS = ["ER", "PR", "HER2"]  # Modify as needed.
 # ------------------------------------------
 
@@ -41,10 +41,10 @@ REF_AUC = {
 CUSTOM_DATASET_LABELS = {
     "ALL_IMG": "All Imaging Data",
     "ALL_IMG_with_clin": "All Imaging\n+ Pre-Biopsy Clinical",
-    "PC1_3": "Scores from\nTop Three Covariates\nin PC1",
+    "PC1_3": "Top Three Principal\nComponents Per\nFeature Group",
     "VARS_IN_PC_1_3": "Raw Data Values\nfrom Top Three Covariates\nin PC1",
-    "PC1_3_with_clin": "Scores from\nTop Three Covariates\nin PC1\n+ Clinical",
-    "CL_UNCORR": "Uncorrelated Features"
+    "PC1_3_with_clin": "Top Three Principal\nComponents Per\nFeature Group\n+ Clinical",
+    "CL_UNCORR": "Hierarchical Clustering"
 }
 
 # File paths
@@ -60,7 +60,7 @@ os.makedirs(FIGURES_DIR, exist_ok=True)
 df = pd.read_csv(CSV_INPUT)
 
 # Reshape DataFrame: convert wide format (one column per model) to long format
-models = ["ElasticNet", "LASSO", "LogisticRegression", "MLP", "RandomForest", "SVM", "XGBoost", "Superlearner", "Clustering"]
+models = ["ElasticNet", "LASSO", "LogisticRegression", "MLP", "RandomForest", "SVM", "XGBoost", "Superlearner", "Clustering", "GMM" ,"K-Means"]
 df_melt = pd.melt(df, id_vars=["predictor", "dataset"], value_vars=models,
                   var_name="model", value_name="auc")
 
@@ -104,7 +104,7 @@ for predictor in df_filtered["predictor"].unique():
     # Fix legend
     handles, labels = ax.get_legend_handles_labels()
     new_labels = [CUSTOM_DATASET_LABELS.get(lbl, lbl) for lbl in labels]
-    ax.legend(handles, new_labels, title="Dataset", 
+    ax.legend(handles, new_labels, title="Model", 
           bbox_to_anchor=(1.05, 1), 
           loc='upper left', 
           borderaxespad=0.)
