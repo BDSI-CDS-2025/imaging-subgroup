@@ -17,23 +17,34 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
+import matplotlib.colors as mcolors
 
 # ------------------------------------------
 # User adjustable parameters - modify these as needed
-SELECTED_DATASETS = [#"ALL_IMG",
-                     #"ALL_IMG_with_clin",
-                     "PC1_3",
-                     "VARS_IN_PC_1_3",]
-                     #"PC1_3_with_clin",
-                     #"CL_UNCORR"]  # Modify as needed.
+SELECTED_DATASETS = ['VARS_IN_PC1',
+            'CL_UNCORR',
+            'VARS_IN_PC_90',
+            'VARS_IN_PC_90_with_clin',
+            'PC_90',
+            'VARS_IN_PC_1_3_with_clin',
+            'VARS_IN_PC_1_3',
+            'ALL_IMG',
+            'PC1',
+            'PC1_3',
+            'PC1_3_with_clin',
+            'ALL_IMG_with_clin',
+            'CL_UNCORR_with_clin',
+            'VARS_IN_PC1_with_clin',
+            'PC_90_with_clin',
+            'PC1_with_clin']
 SELECTED_MODELS = ["XGBoost", "RandomForest", "MLP", "LogisticRegression", "Superlearner", "GMM" ,"K-Means", "SVM", "LASSO", "ElasticNet"]
 SELECTED_PREDICTORS = ["ER", "PR", "HER2"]  # Modify as needed.
 # ------------------------------------------
 
 # Reference AUC values (update as needed)
 REF_AUC = {
-    "ER": 0.65,
-    "PR": 0.60,
+    "ER": 0.649,
+    "PR": 0.622,
     "HER2": 0.50
 }
 
@@ -86,7 +97,7 @@ for predictor in df_filtered["predictor"].unique():
     reference = REF_AUC.get(predictor, 0)
     sub_df['auc_diff'] = sub_df['auc'] - reference
 
-    ax = sns.barplot(data=sub_df, x="dataset", y="auc_diff", hue="model", palette="Set2")
+    ax = sns.barplot(data=sub_df, x="dataset", y="auc_diff", hue="model", palette="Set1")
     
     plt.title(f"{predictor}: AUC by Dataset and Model")
     plt.ylabel("Difference from Reference AUC")
@@ -122,6 +133,7 @@ for predictor in df_filtered["predictor"].unique():
 
 # --------------------
 # Grouped bar chart for AUC by dataset (for each model)
+'''
 for model in df_filtered["model"].unique():
     sub_df = df_filtered[df_filtered["model"] == model]
 
@@ -145,6 +157,7 @@ for model in df_filtered["model"].unique():
     plt.savefig(barplot_path, dpi=300)
     plt.close()
     print(f"Saved figure: {barplot_path}")
+'''
 
 for predictor in df_filtered["predictor"].unique():
     sub_df = df_filtered[df_filtered["predictor"] == predictor]
@@ -180,5 +193,66 @@ for predictor in df_filtered["predictor"].unique():
     plt.savefig(barplot_path, dpi=300)
     plt.close()
     print(f"Saved figure: {barplot_path}")
+
+# Boxplot for AUC by Model for each Predictor
+for predictor in df_filtered["predictor"].unique():
+    sub_df = df_filtered[df_filtered["predictor"] == predictor]
+    plt.figure(figsize=(10, 6))
+    ax = sns.boxplot(data=sub_df, x="model", y="auc", palette="Set3", showfliers=False)
+
+    # Overlay point-data on top
+    sns.stripplot(x="model", y="auc", data=sub_df, color="black", size=4, jitter=True)
+    
+    # Add a horizontal line for the reference AUC value if available
+    reference = REF_AUC.get(predictor, None)
+    if reference is not None:
+        plt.axhline(reference, color='red', linestyle='--', label="Reference AUC")
+    
+    plt.title(f"{predictor}: AUC Boxplot by Model")
+    plt.ylabel("AUC")
+    plt.xlabel("Model")
+    plt.xticks(rotation=45)
+    
+    if reference is not None:
+        plt.legend(loc="upper right")
+    
+    plt.tight_layout()
+    boxplot_path = FIGURES_DIR / f"{predictor}_auc_boxplot.png"
+    plt.savefig(boxplot_path, dpi=300)
+    plt.close()
+    print(f"Saved figure: {boxplot_path}")
+
+print("Boxplots generated successfully.")
+
+# Heatmaps of AUC by Model and Dataset (with clustering) for each Predictor
+for predictor in df_filtered["predictor"].unique():
+    sub_df = df_filtered[df_filtered["predictor"] == predictor]
+    # Use pivot_table with aggfunc='first' to avoid aggregation artifacts
+    pivot_table = sub_df.pivot_table(index="model", columns="dataset",
+                                     values="auc", aggfunc='first')
+    # Fill missing values so that there are only finite numbers
+    pivot_table = pivot_table.fillna(0)
+
+    # Set up custom colormap: .5=white, max=green
+    vmin = 0.5
+    vmax = pivot_table.max().max()
+    norm = mcolors.TwoSlopeNorm(vmin=vmin, vcenter=0.5, vmax=vmax)
+    cmap = mcolors.LinearSegmentedColormap.from_list("custom_green", ["white", "green"])
+    
+    plt.figure(figsize=(10, 8))
+    ax = sns.heatmap(pivot_table, cmap=cmap, norm=norm, annot=True, fmt=".2f", linewidths=0.5, cbar_kws={'label': 'AUC'})
+    ax.set_title(f"{predictor}: AUC Heatmap by Model and Dataset", pad=20)
+    
+    # Update x-axis labels with custom dataset labels when available
+    new_xticklabels = [CUSTOM_DATASET_LABELS.get(lbl.get_text(), lbl.get_text()) for lbl in ax.get_xticklabels()]
+    ax.set_xticklabels(new_xticklabels, rotation=45, ha='right')
+
+    plt.tight_layout()
+    heatmap_path = FIGURES_DIR / f"{predictor}_auc_heatmap.png"
+    plt.savefig(heatmap_path, dpi=300)
+    plt.close()
+    print(f"Saved heatmap: {heatmap_path}")
+
+print("Heatmaps generated successfully.")
 
 print("All figures generated successfully.")

@@ -17,7 +17,7 @@ path = Path.cwd()
 # Updated base directory for results
 BASE_DIR = path / "data" / "final" / "lucy" / "results"
 SAVE_DIR = path / "data" / "final" / "lucy" / "figures" / "binary-model-zoo"
-CSV_OUT = path / "data" / "final" / "lucy" / "summary_auc.csv"
+CSV_OUT = path / "data" / "final" / "lucy" / "summary_auc_lucy_only.csv"
 # Expected targets (predictors)
 PREDICTORS = ["ER", "PR", "HER2"]
 # List of datasets you want to include

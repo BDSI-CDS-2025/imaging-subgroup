@@ -33,11 +33,11 @@ import joblib
 warnings.filterwarnings("ignore")
 
 # === FLAGS ===
-TARGETS = {'ER': True, 'PR': False, 'HER2': False}  # Set to False to skip
-MODELS = {'RandomForest': False,
-          'XGBoost': False,
-          'MLP': False,
-          'SVM': False,
+TARGETS = {'ER': True, 'PR': True, 'HER2': True}  # Set to False to skip
+MODELS = {'RandomForest': True,
+          'XGBoost': True,
+          'MLP': True,
+          'SVM': True,
           'LogisticRegression': True,
           'LASSO': True,
           'ElasticNet': True}  # Set to False to skip
@@ -49,9 +49,9 @@ RESULTS_DIR = Path.cwd() / "data" / "final" / "lucy" / "results"
 N_SPLITS = 5
 
 # List all CSVs in data/final
-DATASETS = {'VARS_IN_PC1': True,
+DATASETS = {'VARS_IN_PC1': False,
             'CL_UNCORR': False,
-            'VARS_IN_PC_90': True,
+            'VARS_IN_PC_90': False,
             'VARS_IN_PC_90_with_clin': False,
             'PC_90': False,
             'VARS_IN_PC_1_3_with_clin': False,
@@ -64,7 +64,8 @@ DATASETS = {'VARS_IN_PC1': True,
             'CL_UNCORR_with_clin': False,
             'VARS_IN_PC1_with_clin': False,
             'PC_90_with_clin': False,
-            'PC1_with_clin': False}
+            'PC1_with_clin': False,
+            'VARS_IN_PC1': True}
 
 rf_grid = {
     'n_estimators': [100, 200, 500],
@@ -206,6 +207,9 @@ def train_and_save(model_name, model, param_grid, X, y, le, save_dir):
         model = model.__class__(**best_params)
         y_pred = cross_val_predict(model, fit_X, y, cv=N_SPLITS)
         y_proba = cross_val_predict(model, fit_X, y, cv=N_SPLITS, method='predict_proba')
+
+        # Fit the model on the entire dataset before saving
+        model.fit(fit_X, y)
         # Save hyperparameters search results
         save_json({
             "best_params": best_params,
