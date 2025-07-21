@@ -9,20 +9,27 @@ HER2: Logistic Regression on PC1 + Clinical
 from pathlib import Path
 import pandas as pd
 import numpy as np
+import json
 import joblib # to load in models
 from sklearn.inspection import permutation_importance # for interpretabillity
+from sklearn.model_selection import train_test_split
+
+# Each of the models that will be retrained
+from xgboost import XGBClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 
 RES_DIR = Path.cwd() / "data" / "final" / "lucy" / "importance" / "best_models"
 CLIN_DATA_PATH = Path.cwd() / "data" / "raw" / "clinicalData_clean.csv"
 
 MODEL_INFO = [
-    {'model' : Path.cwd() / "data" / "final" / "lucy" / "results/ER/CL_UNCORR_with_clin/XGBoost/model.joblib", # ER
+    {'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/ER/CL_UNCORR_with_clin/XGBoost/hyperparams.json", # ER
      'target' : 'ER',
      'train' : Path.cwd() / "data" / "final" / "CL_UNCORR_with_clin.csv"},
-    {'model' : Path.cwd() / "data" / "final" / "lucy" / "results/PR/ALL_IMG/RandomForest/model.joblib", # PR
+    {'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/PR/ALL_IMG/RandomForest/hyperparams.json", # PR
      'target' : 'PR',
      'train' : Path.cwd() / "data" / "final" / "ALL_IMG.csv"},
-    {'model' : Path.cwd() / "data" / "final" / "lucy" / "results/HER2/PC1_with_clin/LogisticRegression/model.joblib", # HER2
+    {'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/HER2/PC1_with_clin/LogisticRegression/hyperparams.json", # HER2
      'target' : 'HER2',
      'train' : Path.cwd() / "data" / "final" / "PC1_with_clin.csv"}
 ]
@@ -40,7 +47,7 @@ def load_data(X_path, target):
     data = data.drop('Unnamed: 0', axis=1, errors='ignore').dropna()
     
     # Debug print: show feature names used in prediction
-    print("Columns in loaded data:", list(data.columns))
+    # print("Columns in loaded data:", list(data.columns))
 
     # Rename column if it doesn't match training
     # Adjust this mapping as needed to match your training data feature names.
@@ -51,11 +58,30 @@ def load_data(X_path, target):
     return X, y
 
 for m in MODEL_INFO:
-    model = joblib.load(m['model'])
+    print(f'----- Running feature importance for {m["target"]}')
+    # Load hyperparameters
+    with open(m['model_params'], 'r') as f:
+        params = json.load(f)
     X, y = load_data(m['train'], m['target'])
-    # Fix for XGBClassifier: add n_classes_ attribute if missing
-    if not hasattr(model, 'n_classes_'):
-        model.n_classes_ = len(np.unique(y))
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Select model type based on target/model_params path
+    if 'XGBoost' in str(m['model_params']):
+        model = XGBClassifier(**params["best_params"])
+    elif 'RandomForest' in str(m['model_params']):
+        model = RandomForestClassifier(**params["best_params"])
+    elif 'LogisticRegression' in str(m['model_params']):
+        model = LogisticRegression(**params["best_params"], max_iter=1000)
+    else:
+        raise ValueError(f"Unknown model type for {m['model_params']}")
+    
+    print(f'\t----- Training')
+    # Train model
+    model.fit(X_train, y_train)
+
+    # Save model
+    model_path = RES_DIR / f"{m['target']}_best_model.joblib"
+    joblib.dump(model, model_path)
 
     result = permutation_importance(
             model, X, y, scoring='accuracy',
@@ -68,3 +94,4 @@ for m in MODEL_INFO:
     })
     imp_df.sort_values(by='importance_mean', ascending=False, inplace=True)
     imp_df.to_csv(RES_DIR / (m['target'] + '_best_model_feature_importance.csv'))
+    print(f'----- Results saved to {RES_DIR / (m["target"] + "_best_model_feature_importance.csv")}')

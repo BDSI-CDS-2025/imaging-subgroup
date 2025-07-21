@@ -33,7 +33,7 @@ import joblib
 warnings.filterwarnings("ignore")
 
 # === FLAGS ===
-TARGETS = {'ER': True, 'PR': True, 'HER2': True}  # Set to False to skip
+TARGETS = {'ER': False, 'PR': True, 'HER2': False}  # Set to False to skip
 MODELS = {'RandomForest': True,
           'XGBoost': True,
           'MLP': True,
@@ -51,7 +51,7 @@ N_SPLITS = 5
 # List all CSVs in data/final
 DATASETS = {'VARS_IN_PC1': False,
             'CL_UNCORR': False,
-            'VARS_IN_PC_90': False,
+            'VARS_IN_PC_90': True,
             'VARS_IN_PC_90_with_clin': False,
             'PC_90': False,
             'VARS_IN_PC_1_3_with_clin': False,
@@ -65,7 +65,7 @@ DATASETS = {'VARS_IN_PC1': False,
             'VARS_IN_PC1_with_clin': False,
             'PC_90_with_clin': False,
             'PC1_with_clin': False,
-            'VARS_IN_PC1': True}
+            'VARS_IN_PC1': False}
 
 rf_grid = {
     'n_estimators': [100, 200, 500],

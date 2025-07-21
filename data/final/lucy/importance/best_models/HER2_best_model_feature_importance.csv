@@ -1,0 +1,15 @@
+,feature,importance_mean,importance_std
+8,PC1_FGT_Enhancement_Texture,0.0005555555555555314,0.0005555555555555314
+1,PC1_Tumor_Size_and_Morphology,0.0,0.0
+3,PC1_Tumor_Enhancement_Spatial_Heterogeneity,0.0,0.0
+4,PC1_Tumor_Enhancement_Variation,0.0,0.0
+5,PC1_Breast_and_FGT_Volume_Features,0.0,0.0
+6,PC1_FGT_Enhancement,0.0,0.0
+10,Menopause (at diagnosis),0.0,0.0
+11,Race and Ethnicity,0.0,0.0
+13,Staging(Tumor Size)# T,0.0,0.0
+0,PC1_Combining_Tumor_and_FGT_Enhancement,-0.00011111111111111738,0.00033333333333335213
+2,PC1_Tumor_Enhancement_Texture,-0.0006666666666667043,0.0005443310539518481
+7,PC1_Tumor_Enhancement,-0.0011111111111111738,0.0
+9,PC1_FGT_Enhancement_Variation,-0.0011111111111111738,0.0
+12,Date of Birth (Days),-0.00122222222222228,0.0003333333333333188
