@@ -1,81 +1,81 @@
 {
   "best_params": {
-    "bootstrap": false,
+    "bootstrap": true,
     "class_weight": null,
-    "max_depth": 5,
+    "max_depth": 10,
     "min_samples_leaf": 4,
-    "min_samples_split": 5,
+    "min_samples_split": 10,
     "n_estimators": 200
   },
-  "best_score": 0.7451175317624829,
+  "best_score": 0.745117508813161,
   "cv_results": {
     "mean_test_score": [
-      0.7299448651240182,
-      0.7429495043501558,
-      0.7331951436185964,
-      0.63665270668528,
-      0.6399170861711578,
-      0.713661745420703,
-      0.7451175317624829,
-      0.7429495043501558,
-      0.7082540152572725,
-      0.7310165404627945,
-      0.7299378146283684,
-      0.7429495043501558,
-      0.5910959290438118,
-      0.7440352806802318,
-      0.6962928493873118,
-      0.7364418968653497,
-      0.7006641566902153,
-      0.704975534780095,
-      0.7418637280200798,
-      0.707147087440247,
-      0.7310235909584444,
-      0.7418672532679048,
-      0.7299342893805435,
-      0.7440352806802318,
-      0.724523033969288,
-      0.7353561205352737,
-      0.7440352806802318,
-      0.5932851079430884,
-      0.7418672532679048,
-      0.7429495043501558,
-      0.6757054020897669,
-      0.7299342893805435
+      0.7310517038777908,
+      0.7407873090481785,
+      0.7397121034077556,
+      0.6562162162162163,
+      0.6518801410105758,
+      0.7126674500587544,
+      0.7440305522914218,
+      0.7397062279670975,
+      0.7126145710928319,
+      0.7397062279670974,
+      0.7331962397179789,
+      0.6377849588719154,
+      0.7440481786133959,
+      0.6670387779083431,
+      0.7451116333725029,
+      0.7115158636897767,
+      0.7429494712103407,
+      0.745117508813161,
+      0.7440364277320799,
+      0.7407873090481786,
+      0.7071856639247944,
+      0.7213043478260869,
+      0.7397062279670976,
+      0.7386075205640422,
+      0.7191069330199765,
+      0.7115334900117508,
+      0.7115393654524089,
+      0.7386192714453583,
+      0.7429494712103406,
+      0.7418683901292596,
+      0.7418742655699178,
+      0.73427732079906
     ],
     "std_test_score": [
-      0.011342593208377336,
-      0.0026886018474029977,
-      0.004960944377901111,
-      0.004584307959091607,
-      0.008365085514850774,
-      0.01750271380123429,
-      0.004153681498547349,
-      0.0026886018474029977,
-      0.017512444125389687,
-      0.013439380286102734,
-      0.0044121008071517104,
-      0.0053337570431187175,
-      0.007259985786508685,
-      0.0013813664597003335,
-      0.013790048562675912,
-      0.010646053490279049,
-      0.022999853679519976,
-      0.009734144456482699,
-      0.0041550724960638,
-      0.011856557780106924,
-      0.010964026273861898,
-      0.005439291752663078,
-      0.013304426337784838,
-      0.006659500123755871,
-      0.012867662572952465,
-      0.006751424829118264,
-      0.006659500123755871,
-      0.011224265070174643,
-      0.0011366833489186723,
-      0.0026886018474029977,
-      0.006654442906478193,
-      0.0053352666352699625
+      0.01647666743066889,
+      0.003558043840923729,
+      0.01583229473788554,
+      0.022599954091562388,
+      0.03479369781469424,
+      0.03572544963436089,
+      0.0042510508356263296,
+      0.004227076379656417,
+      0.01723493794896135,
+      0.006431973457631506,
+      0.010293580878092486,
+      0.031701263351489734,
+      0.008934835752935756,
+      0.021106812187441593,
+      0.005197610207664731,
+      0.01854630098853269,
+      0.005526944300553209,
+      0.003503181914131363,
+      0.003893072477715394,
+      0.004947162901648547,
+      0.015180342270020627,
+      0.020079772103423495,
+      0.01769849696322421,
+      0.0025356049416654287,
+      0.00937727691703363,
+      0.020152098532055757,
+      0.01755096897504062,
+      0.003468580711566049,
+      0.0026301375816472476,
+      0.004098910545424584,
+      0.00505948793048532,
+      0.00570121833422379
     ],
     "params": [
       {
@@ -167,20 +167,28 @@
         "n_estimators": 200
       },
       {
-        "bootstrap": false,
-        "class_weight": null,
+        "bootstrap": true,
+        "class_weight": "balanced",
         "max_depth": 5,
         "min_samples_leaf": 2,
+        "min_samples_split": 5,
+        "n_estimators": 100
+      },
+      {
+        "bootstrap": true,
+        "class_weight": null,
+        "max_depth": null,
+        "min_samples_leaf": 4,
         "min_samples_split": 5,
         "n_estimators": 200
       },
       {
         "bootstrap": false,
         "class_weight": "balanced",
-        "max_depth": 5,
+        "max_depth": 10,
         "min_samples_leaf": 1,
         "min_samples_split": 5,
-        "n_estimators": 100
+        "n_estimators": 500
       },
       {
         "bootstrap": true,
@@ -195,32 +203,128 @@
         "class_weight": "balanced",
         "max_depth": 20,
         "min_samples_leaf": 4,
+        "min_samples_split": 2,
+        "n_estimators": 500
+      },
+      {
+        "bootstrap": true,
+        "class_weight": null,
+        "max_depth": 20,
+        "min_samples_leaf": 4,
+        "min_samples_split": 5,
+        "n_estimators": 200
+      },
+      {
+        "bootstrap": true,
+        "class_weight": null,
+        "max_depth": 10,
+        "min_samples_leaf": 4,
         "min_samples_split": 10,
         "n_estimators": 200
       },
       {
-        "bootstrap": false,
+        "bootstrap": true,
+        "class_weight": null,
+        "max_depth": 5,
+        "min_samples_leaf": 4,
+        "min_samples_split": 10,
+        "n_estimators": 500
+      },
+      {
+        "bootstrap": true,
         "class_weight": null,
         "max_depth": 10,
         "min_samples_leaf": 4,
-        "min_samples_split": 5,
+        "min_samples_split": 2,
+        "n_estimators": 500
+      },
+      {
+        "bootstrap": false,
+        "class_weight": "balanced",
+        "max_depth": 20,
+        "min_samples_leaf": 2,
+        "min_samples_split": 2,
         "n_estimators": 500
       },
       {
         "bootstrap": false,
         "class_weight": null,
+        "max_depth": 10,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "n_estimators": 500
+      },
+      {
+        "bootstrap": true,
+        "class_weight": "balanced",
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "n_estimators": 100
+      },
+      {
+        "bootstrap": true,
+        "class_weight": null,
+        "max_depth": null,
+        "min_samples_leaf": 4,
+        "min_samples_split": 2,
+        "n_estimators": 200
+      },
+      {
+        "bootstrap": false,
+        "class_weight": "balanced",
         "max_depth": 20,
         "min_samples_leaf": 1,
         "min_samples_split": 2,
-        "n_estimators": 500
+        "n_estimators": 100
       },
       {
         "bootstrap": false,
         "class_weight": "balanced",
-        "max_depth": 20,
+        "max_depth": null,
+        "min_samples_leaf": 2,
+        "min_samples_split": 2,
+        "n_estimators": 100
+      },
+      {
+        "bootstrap": false,
+        "class_weight": "balanced",
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "n_estimators": 200
+      },
+      {
+        "bootstrap": true,
+        "class_weight": null,
+        "max_depth": 5,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "n_estimators": 100
+      },
+      {
+        "bootstrap": true,
+        "class_weight": null,
+        "max_depth": 10,
+        "min_samples_leaf": 4,
+        "min_samples_split": 5,
+        "n_estimators": 100
+      },
+      {
+        "bootstrap": false,
+        "class_weight": null,
+        "max_depth": 5,
+        "min_samples_leaf": 2,
+        "min_samples_split": 5,
+        "n_estimators": 200
+      },
+      {
+        "bootstrap": true,
+        "class_weight": null,
+        "max_depth": 5,
         "min_samples_leaf": 1,
         "min_samples_split": 5,
-        "n_estimators": 500
+        "n_estimators": 200
       },
       {
         "bootstrap": false,
@@ -229,110 +333,6 @@
         "min_samples_leaf": 1,
         "min_samples_split": 2,
         "n_estimators": 500
-      },
-      {
-        "bootstrap": true,
-        "class_weight": "balanced",
-        "max_depth": null,
-        "min_samples_leaf": 2,
-        "min_samples_split": 10,
-        "n_estimators": 200
-      },
-      {
-        "bootstrap": false,
-        "class_weight": null,
-        "max_depth": 10,
-        "min_samples_leaf": 4,
-        "min_samples_split": 5,
-        "n_estimators": 200
-      },
-      {
-        "bootstrap": false,
-        "class_weight": null,
-        "max_depth": 5,
-        "min_samples_leaf": 4,
-        "min_samples_split": 2,
-        "n_estimators": 200
-      },
-      {
-        "bootstrap": false,
-        "class_weight": null,
-        "max_depth": null,
-        "min_samples_leaf": 4,
-        "min_samples_split": 5,
-        "n_estimators": 500
-      },
-      {
-        "bootstrap": false,
-        "class_weight": null,
-        "max_depth": 5,
-        "min_samples_leaf": 4,
-        "min_samples_split": 5,
-        "n_estimators": 500
-      },
-      {
-        "bootstrap": false,
-        "class_weight": null,
-        "max_depth": 10,
-        "min_samples_leaf": 2,
-        "min_samples_split": 5,
-        "n_estimators": 100
-      },
-      {
-        "bootstrap": true,
-        "class_weight": null,
-        "max_depth": null,
-        "min_samples_leaf": 2,
-        "min_samples_split": 10,
-        "n_estimators": 100
-      },
-      {
-        "bootstrap": false,
-        "class_weight": null,
-        "max_depth": 5,
-        "min_samples_leaf": 1,
-        "min_samples_split": 5,
-        "n_estimators": 200
-      },
-      {
-        "bootstrap": false,
-        "class_weight": "balanced",
-        "max_depth": 5,
-        "min_samples_leaf": 1,
-        "min_samples_split": 5,
-        "n_estimators": 200
-      },
-      {
-        "bootstrap": true,
-        "class_weight": null,
-        "max_depth": null,
-        "min_samples_leaf": 4,
-        "min_samples_split": 5,
-        "n_estimators": 500
-      },
-      {
-        "bootstrap": true,
-        "class_weight": null,
-        "max_depth": 5,
-        "min_samples_leaf": 1,
-        "min_samples_split": 10,
-        "n_estimators": 500
-      },
-      {
-        "bootstrap": false,
-        "class_weight": "balanced",
-        "max_depth": null,
-        "min_samples_leaf": 4,
-        "min_samples_split": 5,
-        "n_estimators": 500
-      },
-      {
-        "bootstrap": true,
-        "class_weight": null,
-        "max_depth": null,
-        "min_samples_leaf": 4,
-        "min_samples_split": 5,
-        "n_estimators": 100
       }
     ]
   }

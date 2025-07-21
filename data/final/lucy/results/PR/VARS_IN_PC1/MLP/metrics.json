@@ -1,0 +1,21 @@
+{
+  "accuracy": 0.648590021691974,
+  "auc": 0.5000232255667039,
+  "confusion_matrix": [
+    [
+      0,
+      324
+    ],
+    [
+      0,
+      598
+    ]
+  ],
+  "best_params": {
+    "activation": "tanh",
+    "alpha": 0.005842928269761149,
+    "hidden_layer_sizes": 65,
+    "learning_rate_init": 0.008937661586109223,
+    "solver": "sgd"
+  }
+}

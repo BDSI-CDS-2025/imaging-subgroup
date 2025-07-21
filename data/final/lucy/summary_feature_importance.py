@@ -153,6 +153,14 @@ def main():
     
     summary, all_imp = analyze_feature_importance(target, selected_datasets, predictors)
     
+    if all_imp is not None:
+        # Save the results only if available.
+        csv_path = Path.cwd() / "all_feature_importance.csv"
+        all_imp.to_csv(csv_path, index=False)
+        print(f"Feature importance results saved at: {csv_path}")
+    else:
+        print("No feature importance records generated.")
+    
     if summary is not None:
         print("Average Feature Importance across models and datasets:")
         print(summary.head(10))
@@ -162,10 +170,6 @@ def main():
         plt.title(f'Top 10 Important Features for {target}')
         plt.tight_layout()
         output_path = Path.cwd() / f"feature_importance_{target}.png"
-        plt.savefig(output_path)
-        plt.show()
-    else:
-        print("No feature importance records found.")
 
 if __name__ == "__main__":
     main()
