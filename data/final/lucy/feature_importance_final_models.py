@@ -16,22 +16,22 @@ from sklearn.model_selection import train_test_split
 
 # Each of the models that will be retrained
 from xgboost import XGBClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
 
 RES_DIR = Path.cwd() / "data" / "final" / "lucy" / "importance" / "best_models"
 CLIN_DATA_PATH = Path.cwd() / "data" / "raw" / "clinicalData_clean.csv"
+IMG = Path.cwd() / "data" / "final" / "ALL_IMG.csv"
 
 MODEL_INFO = [
-    {'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/ER/CL_UNCORR_with_clin/XGBoost/hyperparams.json", # ER
-     'target' : 'ER',
-     'train' : Path.cwd() / "data" / "final" / "CL_UNCORR_with_clin.csv"},
-    {'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/PR/ALL_IMG/RandomForest/hyperparams.json", # PR
-     'target' : 'PR',
-     'train' : Path.cwd() / "data" / "final" / "ALL_IMG.csv"},
-    {'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/HER2/PC1_with_clin/LogisticRegression/hyperparams.json", # HER2
-     'target' : 'HER2',
-     'train' : Path.cwd() / "data" / "final" / "PC1_with_clin.csv"}
+    {'model' : 'XGBoost',
+     'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/ER/ALL_IMG/XGBoost/hyperparams.json",
+     'target' : 'ER'},
+    {'model' : 'XGBoost',
+     'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/PR/ALL_IMG/XGBoost/hyperparams.json",
+     'target' : 'PR'},
+    {'model': 'MLP',
+     'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/HER2/ALL_IMG/MLP/hyperparams.json",
+     'target' : 'HER2'}
 ]
 
 def load_data(X_path, target):
@@ -45,9 +45,6 @@ def load_data(X_path, target):
     clin = pd.read_csv(CLIN_DATA_PATH)
     data = features.merge(clin[['Patient ID', target]], on='Patient ID', how='inner')
     data = data.drop('Unnamed: 0', axis=1, errors='ignore').dropna()
-    
-    # Debug print: show feature names used in prediction
-    # print("Columns in loaded data:", list(data.columns))
 
     # Rename column if it doesn't match training
     # Adjust this mapping as needed to match your training data feature names.
@@ -62,16 +59,14 @@ for m in MODEL_INFO:
     # Load hyperparameters
     with open(m['model_params'], 'r') as f:
         params = json.load(f)
-    X, y = load_data(m['train'], m['target'])
+    X, y = load_data(IMG, m['target'])
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Select model type based on target/model_params path
-    if 'XGBoost' in str(m['model_params']):
+    if 'MLP' in str(m['model_params']):
+        model = MLPClassifier(**params["best_params"], max_iter=2000)
+    elif 'XGBoost' in str(m['model_params']):
         model = XGBClassifier(**params["best_params"])
-    elif 'RandomForest' in str(m['model_params']):
-        model = RandomForestClassifier(**params["best_params"])
-    elif 'LogisticRegression' in str(m['model_params']):
-        model = LogisticRegression(**params["best_params"], max_iter=1000)
     else:
         raise ValueError(f"Unknown model type for {m['model_params']}")
     
