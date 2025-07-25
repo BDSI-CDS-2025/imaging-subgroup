@@ -37,7 +37,7 @@ SELECTED_DATASETS = ['VARS_IN_PC1',
             'VARS_IN_PC1_with_clin',
             'PC_90_with_clin',
             'PC1_with_clin']
-BARPLOT_DATASETS = ['ALL_IMG', 'ALL_IMG_with_clin']
+BARPLOT_DATASETS = ['PC1_3', 'VARS_IN_PC_1_3']
 SELECTED_MODELS = ["XGBoost", "RandomForest", "MLP", "LogisticRegression", "Superlearner", "GMM" ,"K-Means", "SVM", "LASSO", "ElasticNet"]
 SELECTED_PREDICTORS = ["ER", "PR", "HER2"]  # Modify as needed.
 # ------------------------------------------
@@ -51,12 +51,12 @@ REF_AUC = {
 
 # FIXING THE COLUMN NAMES
 CUSTOM_DATASET_LABELS = {
-    "ALL_IMG": "All Imaging Data",
-    "ALL_IMG_with_clin": "All Imaging\n+ Pre-Biopsy Clinical",
+    "ALL_IMG": "Unengineered Data",
+    "ALL_IMG_with_clin": "Unengineered Data\n+ Pre-Biopsy Clinical",
 
-    "PC1_3": "Top Three\n PCs Per\nFeature Group",
+    "PC1_3": "Top Three\nPCs Per\nFeature Group",
     "VARS_IN_PC_1_3": "Raw Data Values\nfrom Top Three Covariates\nin PC1",
-    "PC1_3_with_clin": "Top Three PCs\ns Per Feature Group\n+ Clinical",
+    "PC1_3_with_clin": "Top Three PCs\nPer Feature Group\n+ Clinical",
     "VARS_IN_PC_1_3_with_clin":"Raw Data Values\nfrom Top Three Covariates\nin PC1\n+ Clinical",
 
     "PC1": "Top PC\ Per Feature\n Group",
@@ -86,7 +86,7 @@ os.makedirs(FIGURES_DIR, exist_ok=True)
 df = pd.read_csv(CSV_INPUT)
 
 # Reshape DataFrame: convert wide format (one column per model) to long format
-models = ["ElasticNet", "LASSO", "LogisticRegression", "MLP", "RandomForest", "SVM", "XGBoost", "Superlearner", "Clustering", "GMM" ,"K-Means"]
+models = ["ElasticNet", "LASSO", "LogisticRegression", "MLP", "RandomForest", "SVM", "XGBoost", "Superlearner", "GMM" ,"K-Means"]
 df_melt = pd.melt(df, id_vars=["predictor", "dataset"], value_vars=models,
                   var_name="model", value_name="auc")
 
@@ -106,6 +106,19 @@ print(f"Saved filtered summary CSV: {CSV_OUT}")
 # Create a combined column for model and predictor (e.g. "XGBoost ER")
 df_filtered['model_predictor'] = df_filtered['model'] + " " + df_filtered['predictor']
 
+# Output best AUC per predictor and the corresponding model/dataset
+print("\nBest AUC per predictor:")
+for predictor in SELECTED_PREDICTORS:
+    sub_df = df_filtered[df_filtered["predictor"] == predictor]
+    if not sub_df.empty:
+        best_row = sub_df.loc[sub_df["auc"].idxmax()]
+        print(f"{predictor}:")
+        print(f"  Best AUC: {best_row['auc']:.3f}")
+        print(f"  Model: {best_row['model']}")
+        print(f"  Dataset: {best_row['dataset']}")
+        print(f"  Custom Dataset Label: {CUSTOM_DATASET_LABELS.get(best_row['dataset'], best_row['dataset'])}")
+    else:
+        print(f"{predictor}: No data available.")
 
 # Barchart for AUC by model
 for predictor in df_barplot["predictor"].unique():
@@ -117,17 +130,17 @@ for predictor in df_barplot["predictor"].unique():
     # Set3 and Set2
     ax = sns.barplot(data=sub_df, x="model", y="auc_diff", hue="dataset", palette="Set2")
 
-    plt.title(f"{predictor}: AUC by Model and Dataset")
-    plt.ylabel("Difference from Reference AUC")
-    plt.xlabel("Model")
-    plt.xticks(rotation=45)
+    plt.title(f"{predictor}: AUC by Model and Dataset", fontsize=20)
+    plt.ylabel("Difference from Reference AUC", fontsize=18)
+    plt.xlabel("Model", fontsize=24)
+    plt.xticks(rotation=35, ha='right', fontsize=18)
     
     plt.axhline(0, color='red', linestyle='--', label='_nolegend_')
 
     # Clear the existing annotations and use a different approach
     for p in ax.containers:
         # This avoids the ghost annotations issue
-        ax.bar_label(p, labels=[f"{h + reference:.4f}" for h in p.datavalues], 
+        ax.bar_label(p, labels=[f"{h + reference:.3f}" for h in p.datavalues], 
                     padding=3, fontsize=5)
 
     # Fix legend
@@ -136,6 +149,7 @@ for predictor in df_barplot["predictor"].unique():
     ax.legend(handles, new_labels, title="Dataset", 
           bbox_to_anchor=(1.05, 1), 
           loc='upper left', 
+          fontsize=14,
           borderaxespad=0.)
 
     plt.tight_layout()
@@ -159,10 +173,12 @@ for predictor in df_filtered["predictor"].unique():
     if reference is not None:
         plt.axhline(reference, color='red', linestyle='--', label="Reference AUC")
     
-    plt.title(f"{predictor}: AUC Boxplot by Model")
-    plt.ylabel("AUC")
-    plt.xlabel("Model")
-    plt.xticks(rotation=45)
+    plt.title(f"{predictor}: AUC Boxplot by Model", fontsize=20)
+    plt.ylabel("AUC", fontsize=20)
+    plt.xlabel("Model", fontsize=20)
+    plt.xticks(rotation=45, fontsize=20, ha='right')
+
+    ax.legend(fontsize=18)
     
     if reference is not None:
         plt.legend(loc="upper right")
@@ -199,17 +215,31 @@ for predictor in df_filtered["predictor"].unique():
     norm = mcolors.TwoSlopeNorm(vmin=vmin, vcenter=(vmax+vmin)/2, vmax=vmax)
     cmap = mcolors.LinearSegmentedColormap.from_list("custom_green", ["white", "green"])
     
-    plt.figure(figsize=(14.5, 10))
+    plt.figure(figsize=(20, 10))
     ax = sns.heatmap(pivot_table, cmap=cmap, norm=norm, annot=True, fmt=".2f", linewidths=0.5, cbar_kws={'label': 'AUC'})
-    ax.set_title(f"{predictor}: AUC Heatmap by Model and Dataset", pad=20)
+    ax.set_title(f"{predictor}: AUC Heatmap by Model and Dataset", fontsize=20)
+    ax.set_xlabel("Feature Subset", fontsize=22)
+    ax.set_ylabel("Model", fontsize=22, labelpad=3)
     
     # Update x-axis labels with custom dataset labels when available
-    ax.set_xticklabels(dataset_numbers, rotation=0)
+    ax.set_xticklabels(dataset_numbers, rotation=0, fontsize=18)
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=18)
+
+    # Make annotation text larger
+    for t in ax.texts:
+        t.set_fontsize(16)
+
+    # Make colorbar label and ticks larger
+    cbar = ax.collections[0].colorbar
+    cbar.ax.tick_params(labelsize=16)
+    cbar.set_label('AUC', fontsize=20)
 
     # Create legend mapping numbers to dataset names
     legend_labels = [f"{num}: {CUSTOM_DATASET_LABELS.get(ds, ds)}" for ds, num in dataset_map.items()]
     legend_text = "\n\n".join(legend_labels)
     plt.gcf().text(1.25, 0.5, legend_text, va='center', fontsize=8, transform=ax.transAxes)
+
+    plt.tight_layout(rect=[0, 0, 0.85, 1])  # Leave space for legend on the right
 
     heatmap_path = FIGURES_DIR / f"{predictor}_auc_heatmap.png"
     plt.savefig(heatmap_path, dpi=300)
