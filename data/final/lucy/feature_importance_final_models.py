@@ -20,17 +20,17 @@ from sklearn.neural_network import MLPClassifier
 
 RES_DIR = Path.cwd() / "data" / "final" / "lucy" / "importance" / "best_models"
 CLIN_DATA_PATH = Path.cwd() / "data" / "raw" / "clinicalData_clean.csv"
-IMG = Path.cwd() / "data" / "final" / "ALL_IMG.csv"
+IMG = Path.cwd() / "data" / "final" / "CL_UNCORR.csv"
 
 MODEL_INFO = [
     {'model' : 'XGBoost',
-     'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/ER/ALL_IMG/XGBoost/hyperparams.json",
+     'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/ER/CL_UNCORR/XGBoost/hyperparams.json",
      'target' : 'ER'},
     {'model' : 'XGBoost',
-     'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/PR/ALL_IMG/XGBoost/hyperparams.json",
+     'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/PR/CL_UNCORR/XGBoost/hyperparams.json",
      'target' : 'PR'},
-    {'model': 'MLP',
-     'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/HER2/ALL_IMG/MLP/hyperparams.json",
+    {'model': 'XGBoost',
+     'model_params' : Path.cwd() / "data" / "final" / "lucy" / "results/HER2/CL_UNCORR/XGBoost/hyperparams.json",
      'target' : 'HER2'}
 ]
 
@@ -75,7 +75,7 @@ for m in MODEL_INFO:
     model.fit(X_train, y_train)
 
     # Save model
-    model_path = RES_DIR / f"{m['target']}_best_model.joblib"
+    model_path = RES_DIR / f"{m['target']}_best_model_uncorr.joblib"
     joblib.dump(model, model_path)
 
     result = permutation_importance(
@@ -88,5 +88,5 @@ for m in MODEL_INFO:
         'importance_std': result.importances_std
     })
     imp_df.sort_values(by='importance_mean', ascending=False, inplace=True)
-    imp_df.to_csv(RES_DIR / (m['target'] + '_best_model_feature_importance.csv'))
-    print(f'----- Results saved to {RES_DIR / (m["target"] + "_best_model_feature_importance.csv")}')
+    imp_df.to_csv(RES_DIR / (m['target'] + '_best_model_feature_importance_uncorr.csv'))
+    print(f'----- Results saved to {RES_DIR / (m["target"] + "_best_model_feature_importance_uncorr.csv")}')
