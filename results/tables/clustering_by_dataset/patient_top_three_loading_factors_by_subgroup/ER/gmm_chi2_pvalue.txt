@@ -1,0 +1,2 @@
+Chi-squared p-value: 0.9946442742867284
+Not significant at p < 0.05
