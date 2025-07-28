@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Using radiomics features to predict molecular subtype of breast cancer</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --secondary-color: #4a90e2;
+            --accent-color: #6c7b7f;
+        }
+        
+        .reveal .slides section {
+            text-align: left;
+        }
+        
+        .reveal h1, .reveal h2, .reveal h3 {
+            color: var(--primary-color);
+            text-align: center;
+        }
+        
+        .reveal .title-slide {
+            text-align: center;
+        }
+        
+        .reveal .title-slide h1 {
+            font-size: 2.5em;
+            color: var(--primary-color);
+            margin-bottom: 0.5em;
+        }
+        
+        .reveal .title-slide h2 {
+            color: var(--secondary-color);
+            font-size: 1.5em;
+            margin-bottom: 1em;
+        }
+        
+        .reveal .biomarker-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .reveal .biomarker-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .reveal .results-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .reveal .results-container img {
+            max-width: 30%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .reveal .methodology-list {
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        
+        .reveal .methodology-list li {
+            margin: 10px 0;
+        }
+        
+        .reveal .highlight {
+            background: linear-gradient(120deg, #a8e6cf 0%, #dcedc8 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .reveal .conclusion-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .reveal .conclusion-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .reveal .center-content {
+            text-align: center;
+        }
+        
+        .reveal .large-icon {
+            font-size: 3em;
+            color: var(--secondary-color);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- Title Slide -->
+            <section class="title-slide">
+                <h1>Using radiomics features to predict molecular subtype of breast cancer</h1>
+                <h2>BDSI Imaging Subgroup Research Project</h2>
+                <p><small>Final Symposium Presentation</small></p>
+            </section>
+
+            <!-- Overview -->
+            <section>
+                <h2>Project Overview</h2>
+                <div class="highlight">
+                    <p><strong>Objective:</strong> Develop and evaluate machine learning models using radiomics features to predict molecular subtypes of breast cancer.</p>
+                </div>
+                <div class="biomarker-grid">
+                    <div class="biomarker-card">
+                        <h3>ER</h3>
+                        <p>Estrogen Receptor</p>
+                    </div>
+                    <div class="biomarker-card">
+                        <h3>HER2</h3>
+                        <p>Human Epidermal Growth Factor Receptor 2</p>
+                    </div>
+                    <div class="biomarker-card">
+                        <h3>PR</h3>
+                        <p>Progesterone Receptor</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Methodology -->
+            <section>
+                <h2>Methodology</h2>
+                <div class="methodology-list">
+                    <h3>Machine Learning Approach</h3>
+                    <ul>
+                        <li><strong>Model Zoo:</strong> Comprehensive evaluation of multiple algorithms</li>
+                        <li><strong>Feature Engineering:</strong> Advanced feature selection and importance analysis</li>
+                        <li><strong>Cross-Validation:</strong> Robust model validation techniques</li>
+                        <li><strong>Performance Metrics:</strong> AUC analysis and statistical validation</li>
+                    </ul>
+                </div>
+                <div class="center-content">
+                    <p><em>Ensemble methods, neural networks, and traditional classifiers</em></p>
+                </div>
+            </section>
+
+            <!-- ER Results -->
+            <section>
+                <h2>Estrogen Receptor (ER) Results</h2>
+                <div class="results-container">
+                    <img src="data/final/lucy/figures/custom/ER_auc_barplot_by_model.png" alt="ER AUC Bar Plot">
+                    <img src="data/final/lucy/figures/custom/ER_auc_boxplot.png" alt="ER AUC Box Plot">
+                    <img src="data/final/lucy/figures/custom/ER_auc_heatmap.png" alt="ER AUC Heatmap">
+                </div>
+                <div class="highlight">
+                    <p><strong>Key Findings:</strong> Comprehensive model performance analysis showing optimal algorithms for ER prediction with detailed AUC metrics and feature importance rankings.</p>
+                </div>
+            </section>
+
+            <!-- HER2 Results -->
+            <section>
+                <h2>HER2 Analysis Results</h2>
+                <div class="results-container">
+                    <img src="data/final/lucy/figures/custom/HER2_auc_barplot_by_model.png" alt="HER2 AUC Bar Plot">
+                    <img src="data/final/lucy/figures/custom/HER2_auc_boxplot.png" alt="HER2 AUC Box Plot">
+                    <img src="data/final/lucy/figures/custom/HER2_auc_heatmap.png" alt="HER2 AUC Heatmap">
+                </div>
+                <div class="highlight">
+                    <p><strong>Key Findings:</strong> HER2 biomarker prediction models demonstrate strong performance across multiple algorithms with consistent validation results.</p>
+                </div>
+            </section>
+
+            <!-- PR Results -->
+            <section>
+                <h2>Progesterone Receptor (PR) Results</h2>
+                <div class="results-container">
+                    <img src="data/final/lucy/figures/custom/PR_auc_barplot_by_model.png" alt="PR AUC Bar Plot">
+                    <img src="data/final/lucy/figures/custom/PR_auc_boxplot.png" alt="PR AUC Box Plot">
+                    <img src="data/final/lucy/figures/custom/PR_auc_heatmap.png" alt="PR AUC Heatmap">
+                </div>
+                <div class="highlight">
+                    <p><strong>Key Findings:</strong> PR receptor analysis reveals important patterns in model performance and feature contributions to prediction accuracy.</p>
+                </div>
+            </section>
+
+            <!-- Model Performance Summary -->
+            <section>
+                <h2>Model Performance Summary</h2>
+                <div class="conclusion-grid">
+                    <div class="conclusion-item">
+                        <h3>Best Performers</h3>
+                        <p>Identified top-performing algorithms for each biomarker with statistical significance testing.</p>
+                    </div>
+                    <div class="conclusion-item">
+                        <h3>Feature Insights</h3>
+                        <p>Comprehensive feature importance analysis revealing key predictive variables.</p>
+                    </div>
+                    <div class="conclusion-item">
+                        <h3>Model Validation</h3>
+                        <p>Robust cross-validation ensuring generalizability and preventing overfitting.</p>
+                    </div>
+                    <div class="conclusion-item">
+                        <h3>Clinical Relevance</h3>
+                        <p>Results provide actionable insights for cancer biomarker prediction in clinical settings.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Future Directions -->
+            <section>
+                <h2>Future Directions</h2>
+                <div class="methodology-list">
+                    <ul>
+                        <li><strong>Deep Learning:</strong> Explore advanced neural network architectures</li>
+                        <li><strong>Multi-modal Integration:</strong> Combine imaging and genomic data</li>
+                        <li><strong>Clinical Validation:</strong> Prospective studies in clinical settings</li>
+                        <li><strong>Real-time Prediction:</strong> Deploy models for clinical decision support</li>
+                    </ul>
+                </div>
+                <div class="center-content">
+                    <p><em>Advancing precision medicine through AI</em></p>
+                </div>
+            </section>
+
+            <!-- Conclusions -->
+            <section>
+                <h2>Conclusions</h2>
+                <div class="highlight">
+                    <h3>Key Achievements</h3>
+                    <ul>
+                        <li>Successfully developed and validated ML models for cancer biomarker prediction</li>
+                        <li>Comprehensive analysis of ER, HER2, and PR biomarkers</li>
+                        <li>Identified optimal algorithms and feature sets for each biomarker</li>
+                        <li>Generated actionable insights for clinical applications</li>
+                    </ul>
+                </div>
+                <div class="center-content">
+                    <p><strong>Impact:</strong> Contributing to precision medicine and improved patient outcomes</p>
+                </div>
+            </section>
+
+            <!-- Thank You -->
+            <section class="title-slide">
+                <h1>Thank You</h1>
+                <h2>Questions & Discussion</h2>
+                <div class="center-content">
+                    <p><strong>BDSI Imaging Subgroup</strong></p>
+                    <p><em>Radiomics & Breast Cancer Research</em></p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: true,
+            transition: 'slide',
+            backgroundTransition: 'fade',
+            
+            // More options
+            controlsTutorial: true,
+            controlsLayout: 'bottom-right',
+            controlsBackArrows: 'faded',
+            progress: true,
+            slideNumber: true,
+            showSlideNumber: 'all',
+            hashOneBasedIndex: false,
+            respondToHashChanges: true,
+            
+            // Keyboard shortcuts
+            keyboard: {
+                13: 'next', // go to the next slide when the ENTER key is pressed
+                27: function() {}, // do something custom when ESC is pressed
+                32: null // don't do anything when SPACE is pressed (i.e. disable a reveal.js default binding)
+            },
+            
+            // Touch navigation
+            touch: true,
+            
+            // Loop presentation
+            loop: false,
+            
+            // Auto-slide
+            autoSlide: 0,
+            autoSlideStoppable: true,
+            
+            // Mouse wheel navigation
+            mouseWheel: false,
+            
+            // Hide cursor
+            hideInactiveCursor: true,
+            hideCursorTime: 5000,
+            
+            // Preload iframes
+            preloadIframes: null,
+            
+            // Auto-animate
+            autoAnimateEasing: 'ease',
+            autoAnimateDuration: 1.0,
+            autoAnimateUnmatched: true,
+            
+            // Parallax background
+            parallaxBackgroundImage: '',
+            parallaxBackgroundSize: '',
+            parallaxBackgroundRepeat: '',
+            parallaxBackgroundPosition: '',
+            parallaxBackgroundHorizontal: null,
+            parallaxBackgroundVertical: null
+        });
+    </script>
+</body>
+</html>
