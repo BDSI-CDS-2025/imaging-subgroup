@@ -29,9 +29,17 @@
             background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
             color: var(--primary-color);
             padding: 60px 0;
-            text-align: center;
             border-bottom: 1px solid var(--border-light);
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
         .university-logo {
@@ -44,6 +52,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            z-index: 10;
         }
         
         .logo-icon {
@@ -207,9 +216,10 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="university-logo">
-            <div class="logo-icon">M</div>
+            <img width="35" src="big_data_summer_institute_logo.jpeg" alt="University Logo">
+            <span>BDSI 2025</span>
         </div>
-        <div class="container">
+        <div class="hero-content">
             <h1>Using radiomics features to predict molecular subtype of breast cancer</h1>
             <p>BDSI Imaging Subgroup</p>
         </div>
